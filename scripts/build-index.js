@@ -76,7 +76,7 @@ console.log(`  Cabeceras: ${header.join(", ")}`);
 
 const col = Object.fromEntries(header.map((h, i) => [h, i]));
 const need = ["refid","familia","articulo","marca","modelo","modeloinicio","modelofin",
-              "motorversion","precio","notapublica","codalmacen","almacen","imgs"];
+              "motorversion","precio","notapublica","refvisual","refcatalogo","imgs"];
 for (const k of need) {
   if (!(k in col)) console.warn(`  AVISO: falta columna '${k}' en el CSV`);
 }
@@ -103,8 +103,8 @@ for (const r of rows) {
   const motor = (r[col.motorversion] || "").trim();
   const precio = toPrice(r[col.precio]);
   const nota   = (r[col.notapublica] || "").trim();
-  const cod    = (r[col.codalmacen] || "").trim();
-  const alm    = (r[col.almacen] || "").trim();
+  const rv     = (r[col.refvisual] || "").trim();
+  const rc     = (r[col.refcatalogo] || "").trim();
   const imgsRaw = (r[col.imgs] || "").trim();
   const imgs = imgsRaw
     ? imgsRaw.split(",").map(s => s.trim()).filter(s => /^https?:\/\//.test(s))
@@ -124,7 +124,8 @@ for (const r of rows) {
     p: precio,
     im: imgs,
     n: nota || undefined,
-    al: alm || undefined,
+    rv: rv || undefined,
+    rc: rc || undefined,
   };
   if (!families.has(familia)) families.set(familia, []);
   families.get(familia).push(pieza);
