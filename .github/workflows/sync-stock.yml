@@ -1,0 +1,70 @@
+name: Sync stock + deploy to Pages
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # cada 6 h (UTC)
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download stock.csv from FTP
+        env:
+          FTP_HOST:        ${{ secrets.FTP_HOST }}
+          FTP_PORT:        ${{ secrets.FTP_PORT }}
+          FTP_USER:        ${{ secrets.FTP_USER }}
+          FTP_PASSWORD:    ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_PATH: ${{ secrets.FTP_REMOTE_PATH }}
+          FTP_SECURE:      ${{ secrets.FTP_SECURE }}
+        run: node scripts/sync-stock.js
+
+      - name: Build index + family JSONs
+        run: node scripts/build-index.js
+
+      - name: Prepare site for Pages
+        run: |
+          rm -rf node_modules
+          rm -f data/stock.csv
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

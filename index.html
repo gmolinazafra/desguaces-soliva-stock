@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Desguaces Soliva — Catálogo de recambios de ocasión</title>
+<meta name="description" content="Catálogo de recambios de automoción de ocasión. Más de 127.000 piezas verificadas. Consulta disponibilidad por WhatsApp." />
+<meta name="theme-color" content="#2E9E47" />
+
+<meta property="og:title" content="Desguaces Soliva — Recambios de ocasión" />
+<meta property="og:description" content="Más de 127.000 recambios verificados. Consulta por WhatsApp." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/logo.png" />
+
+<link rel="icon" type="image/png" href="assets/logo.png" />
+<link rel="apple-touch-icon" href="assets/logo.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+<!-- Cabecera principal verde con título integrado -->
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="#">
+      <img src="assets/logo.png" alt="Desguaces Soliva" class="brand-logo" />
+    </a>
+    <div class="header-title">
+      <p class="hero-kicker">Más de <strong>127.000</strong> piezas verificadas</p>
+      <h1>Encuentra el <em>recambio</em> que necesitas</h1>
+    </div>
+    <nav class="header-nav">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#contacto">Contacto</a>
+      <a id="wa-direct" href="#" target="_blank" rel="noopener" class="header-cta">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2z"/></svg>
+        WhatsApp
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero compacto: solo buscador y stats -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="hero-sub">Catálogo de recambios de ocasión de las principales marcas. Despiece y verificación pieza a pieza.</p>
+
+    <div class="hero-search">
+      <svg class="hero-search-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input id="q" type="search" placeholder="Buscar pieza, marca, modelo o referencia…" autocomplete="off" />
+      <button class="search-clear" id="q-clear" aria-label="Limpiar" hidden>×</button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <strong id="hero-count">—</strong>
+        <span>referencias</span>
+      </div>
+      <div class="stat">
+        <strong id="hero-brands">—</strong>
+        <span>marcas</span>
+      </div>
+      <div class="stat">
+        <strong>+1.200</strong>
+        <span>modelos</span>
+      </div>
+      <div class="stat">
+        <strong id="hero-updated">hoy</strong>
+        <span>actualizado</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filtros -->
+<section class="filters" id="catalogo">
+  <div class="filters-inner">
+    <div class="select-row">
+      <label class="select">
+        <span>Familia</span>
+        <select id="f-family"><option value="">Todas</option></select>
+      </label>
+      <label class="select">
+        <span>Marca</span>
+        <select id="f-brand"><option value="">Todas</option></select>
+      </label>
+      <label class="select">
+        <span>Modelo</span>
+        <select id="f-model" disabled><option value="">— elige marca —</option></select>
+      </label>
+      <label class="select year-range">
+        <span>Año del vehículo</span>
+        <div class="year-inputs">
+          <input id="f-y0" type="number" inputmode="numeric" placeholder="desde" />
+          <span>—</span>
+          <input id="f-y1" type="number" inputmode="numeric" placeholder="hasta" />
+        </div>
+      </label>
+    </div>
+
+    <div class="toolbar">
+      <p class="results-count"><strong id="result-count">—</strong> piezas encontradas</p>
+      <select id="sort" aria-label="Ordenar">
+        <option value="rel">Relevancia</option>
+        <option value="price-asc">Precio ↑</option>
+        <option value="price-desc">Precio ↓</option>
+        <option value="year-desc">Más recientes</option>
+        <option value="year-asc">Más antiguos</option>
+      </select>
+      <button class="reset" id="reset-filters" type="button">Limpiar</button>
+    </div>
+  </div>
+</section>
+
+<!-- Grid -->
+<main class="grid" id="grid" aria-live="polite"></main>
+
+<!-- Cargar más -->
+<div class="load-more-wrap">
+  <button id="load-more" class="load-more" hidden>Mostrar más piezas</button>
+</div>
+
+<!-- Estado / loading -->
+<p class="status" id="status">Cargando catálogo…</p>
+
+<!-- Pie -->
+<footer class="site-footer" id="contacto">
+  <div class="footer-grid">
+    <div>
+      <h3>Desguaces Soliva</h3>
+      <p>Catálogo de recambios de ocasión. Verificación y despiece propios. Las consultas se gestionan por WhatsApp; los precios son orientativos hasta confirmar disponibilidad.</p>
+    </div>
+    <div>
+      <h3>Contacto</h3>
+      <ul class="contact-list">
+        <li>
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2zm6 16.1a8.3 8.3 0 0 1-12.7 1.1l-.3-.2-3 .8.8-2.9-.2-.3a8.3 8.3 0 1 1 15.4-1.4 8.3 8.3 0 0 1 0 2.9z"/></svg>
+          </span>
+          <a id="wa-direct-footer" href="#" target="_blank" rel="noopener">WhatsApp 649 903 695</a>
+        </li>
+        <li>
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          <a href="tel:+34649903695">+34 649 903 695</a>
+        </li>
+        <li>
+          <span class="contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <a href="mailto:hola@desguacessoliva.com">hola@desguacessoliva.com</a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h3>Aviso</h3>
+      <p>Este sitio es un escaparate informativo. No se realizan ventas ni transacciones online; toda compra se acuerda por WhatsApp tras confirmar disponibilidad y estado de la pieza.</p>
+    </div>
+  </div>
+  <p class="copyleft">© <span id="year"></span> Desguaces Soliva</p>
+</footer>
+
+<!-- Modal ficha pieza -->
+<dialog id="product-modal" class="product-modal" aria-labelledby="modal-title">
+  <button class="modal-close" data-close aria-label="Cerrar">×</button>
+  <div class="modal-body" id="modal-body"></div>
+</dialog>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>

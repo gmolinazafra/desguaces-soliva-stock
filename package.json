@@ -1,0 +1,15 @@
+{
+  "name": "reciclacat-escaparate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Escaparate web del catálogo de recambios ReciclaCAT.",
+  "scripts": {
+    "sync": "node scripts/sync-stock.js",
+    "build": "node scripts/build-index.js",
+    "rebuild": "npm run sync && npm run build",
+    "serve": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "basic-ftp": "^5.0.5"
+  }
+}

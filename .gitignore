@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+.DS_Store
+*.log
+.env
+.env.local
+
+# Datos generados por el GitHub Action en cada deploy.
+# No se commitean: viven solo en la build de Pages, evitando bloat del repo.
+data/stock.csv
+data/meta.json
+data/index/
+data/familias/
