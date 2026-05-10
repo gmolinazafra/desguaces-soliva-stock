@@ -132,7 +132,7 @@ for (const r of rows) {
 
   // Entrada del índice como ARRAY posicional (ahorra ~30% vs objetos):
   // [id, familia, marca, modelo, y0, y1, precio, hasImg, articulo, textoBusqueda]
-  const txt = `${articulo} ${marca} ${modelo} ${motor}`.toLowerCase();
+  const txt = `${refid} ${articulo} ${marca} ${modelo} ${motor} ${rv} ${rc}`.toLowerCase();
   indexAll.push([
     refid,
     familia,
