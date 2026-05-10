@@ -347,7 +347,8 @@ async function openProduct(idx) {
   const imgs = pieza.im || [];
   const veh = vehicleString(brand, pieza.mo, pieza.y0, pieza.y1);
   const motor = pieza.mt || "—";
-  const almacen = pieza.al || "Por confirmar";
+  const refVisual = pieza.rv || "—";
+  const refCatalogo = pieza.rc || "—";
 
   const msg = `Hola, escribo desde la web de Desguaces Soliva (desguacessoliva.com).
 Me interesa esta pieza del catálogo:
@@ -386,7 +387,8 @@ Me interesa esta pieza del catálogo:
         <div><dt>Modelo</dt><dd>${escapeHtml(pieza.mo || "—")}</dd></div>
         <div><dt>Años</dt><dd>${pieza.y0 || "?"}${pieza.y1 && pieza.y1 !== pieza.y0 ? ` – ${pieza.y1}` : ""}</dd></div>
         <div><dt>Motor</dt><dd>${escapeHtml(motor)}</dd></div>
-        <div><dt>Ubicación</dt><dd>${escapeHtml(almacen)}</dd></div>
+        <div><dt>Ref. visual</dt><dd>${escapeHtml(refVisual)}</dd></div>
+        <div><dt>Ref. catálogo</dt><dd>${escapeHtml(refCatalogo)}</dd></div>
       </dl>
 
       <div class="modal-price-line">

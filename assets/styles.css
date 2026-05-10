@@ -838,7 +838,15 @@ button { font-family: inherit; }
   #sort, .reset { width: 100%; margin-left: 0; }
   .toolbar { flex-direction: column; align-items: stretch; }
 
-  .modal-meta { grid-template-columns: 1fr; gap: 10px; }
+  .modal-meta { grid-template-columns: 1fr 1fr; gap: 10px 14px; padding: 12px 0; margin-bottom: 14px; }
+  .modal-meta dt { font-size: 9px; }
+  .modal-meta dd { font-size: 12px; }
+  .modal-info { padding: 18px; }
+  .modal-info h2 { font-size: 18px; }
+  .modal-vehicle { font-size: 12px; margin-bottom: 14px; }
+  .modal-note { font-size: 13px; padding: 10px 12px; margin-bottom: 14px; }
+  .modal-price { font-size: 22px; }
+  .cta-wa { padding: 14px 18px; font-size: 13px; }
   .card-title { font-size: 13px; }
   .card-price { font-size: 14px; }
 }
