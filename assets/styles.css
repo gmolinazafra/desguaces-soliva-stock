@@ -806,7 +806,8 @@ button { font-family: inherit; }
 
 @media (max-width: 720px) {
   .modal-body { grid-template-columns: 1fr; }
-  .modal-media { min-height: 240px; aspect-ratio: 4/3; }
+  /* Imagen compacta para dejar sitio al contenido */
+  .modal-media { min-height: 0; aspect-ratio: 16/9; max-height: 32vh; }
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -838,15 +839,28 @@ button { font-family: inherit; }
   #sort, .reset { width: 100%; margin-left: 0; }
   .toolbar { flex-direction: column; align-items: stretch; }
 
-  .modal-meta { grid-template-columns: 1fr 1fr; gap: 10px 14px; padding: 12px 0; margin-bottom: 14px; }
+  /* Modal optimizado para que precio + botón se vean sin scroll */
+  .product-modal { max-height: 98vh; }
+  .modal-info { padding: 12px 14px 14px; }
+  .modal-info .card-cat { margin-bottom: 4px; font-size: 10px; }
+  .modal-info h2 { font-size: 15px; margin-bottom: 4px; line-height: 1.15; }
+  .modal-vehicle { font-size: 10px; margin-bottom: 8px; }
+  .modal-note { font-size: 11px; padding: 6px 9px; margin-bottom: 8px; line-height: 1.3; }
+  .modal-meta {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px 12px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+  }
   .modal-meta dt { font-size: 9px; }
-  .modal-meta dd { font-size: 12px; }
-  .modal-info { padding: 18px; }
-  .modal-info h2 { font-size: 18px; }
-  .modal-vehicle { font-size: 12px; margin-bottom: 14px; }
-  .modal-note { font-size: 13px; padding: 10px 12px; margin-bottom: 14px; }
-  .modal-price { font-size: 22px; }
-  .cta-wa { padding: 14px 18px; font-size: 13px; }
+  .modal-meta dd { font-size: 11px; margin-top: 1px; }
+  .modal-price-line { margin-bottom: 8px; }
+  .modal-price { font-size: 20px; }
+  .modal-price-note { font-size: 10px; }
+  .cta-wa { padding: 11px 18px; font-size: 13px; }
+  .cta-wa svg { width: 16px; height: 16px; }
+  .cta-note { font-size: 10px; margin-top: 4px; }
+
   .card-title { font-size: 13px; }
   .card-price { font-size: 14px; }
 }
