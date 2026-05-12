@@ -206,6 +206,7 @@ console.log(`  data/index/all.json: ${(idxSize/1024/1024).toFixed(2)} MB (~${(id
 
 // 3) Meta
 console.log("\nGenerando meta…");
+const now = new Date();
 const meta = {
   total: indexAll.length,
   families: [...families.keys()].sort(),
@@ -218,7 +219,8 @@ const meta = {
   ),
   yearMin: Number.isFinite(yearMin) ? yearMin : null,
   yearMax: Number.isFinite(yearMax) ? yearMax : null,
-  updated: new Date().toISOString(),
+  updated: now.toISOString(),
+  buildId: now.toISOString().replace(/[-:T.Z]/g, "").slice(0, 14), // YYYYMMDDHHMMSS — cache buster
 };
 const metaSize = writeJSON(path.join(process.cwd(), "data", "meta.json"), meta);
 console.log(`  data/meta.json: ${(metaSize/1024).toFixed(1)} KB`);
