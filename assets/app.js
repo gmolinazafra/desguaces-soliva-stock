@@ -306,9 +306,12 @@ async function hydrateImages(start, end) {
 }
 
 /* Carga JSON de familia bajo demanda y la cachea */
+/* Carga JSON de familia bajo demanda y la cachea (en memoria del navegador) */
 async function getFamily(family) {
   if (state.familyCache.has(family)) return state.familyCache.get(family);
-  const promise = fetch(CONFIG.familyUrl(family), { cache: "force-cache" })
+  // Añadimos buildId como query string para invalidar caché HTTP cuando hay nuevo deploy
+  const url = CONFIG.familyUrl(family) + (state.meta?.buildId ? `?v=${state.meta.buildId}` : "");
+  const promise = fetch(url, { cache: "no-cache" })
     .then(r => r.ok ? r.json() : Promise.reject(r.status));
   state.familyCache.set(family, promise);
   const items = await promise;
