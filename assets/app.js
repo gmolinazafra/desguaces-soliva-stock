@@ -186,7 +186,14 @@ function applyFilters() {
     case "price-desc": out.sort((a,b) => (rows[b][COL.p]||0) - (rows[a][COL.p]||0)); break;
     case "year-desc":  out.sort((a,b) => (rows[b][COL.y1]||rows[b][COL.y0]||0) - (rows[a][COL.y1]||rows[a][COL.y0]||0)); break;
     case "year-asc":   out.sort((a,b) => (rows[a][COL.y0]||rows[a][COL.y1]||9999) - (rows[b][COL.y0]||rows[b][COL.y1]||9999)); break;
-    // 'rel' = orden original del CSV (suele venir por fecha de entrada → más reciente arriba)
+    // 'rel' = orden original del CSV (suele venir por fecha de entrada → más reciente arriba),
+    // pero primero las que tienen foto (mejor presentación visual).
+    default:
+      out.sort((a, b) => {
+        const imgDiff = (rows[b][COL.h] || 0) - (rows[a][COL.h] || 0);
+        if (imgDiff !== 0) return imgDiff;
+        return a - b; // estable: orden original del CSV
+      });
   }
 
   state.filtered = out;
@@ -221,11 +228,15 @@ function renderNextPage() {
 
     const card = document.createElement("article");
     card.className = "card";
+    if (!row[COL.h]) card.classList.add("no-img");
     card.dataset.idx = idx;
     card.style.animationDelay = `${Math.min((i - start) * 25, 500)}ms`;
+    const mediaInner = row[COL.h]
+      ? `<img loading="lazy" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
+      : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
       <div class="card-media">
-        <img loading="lazy" src="" data-needs-img="1" alt="${escapeHtml(title)}">
+        ${mediaInner}
         <span class="badge-ref">REF ${escapeHtml(id)}</span>
       </div>
       <div class="card-body">
@@ -305,7 +316,6 @@ async function hydrateImages(start, end) {
   }
 }
 
-/* Carga JSON de familia bajo demanda y la cachea */
 /* Carga JSON de familia bajo demanda y la cachea (en memoria del navegador) */
 async function getFamily(family) {
   if (state.familyCache.has(family)) return state.familyCache.get(family);
@@ -364,10 +374,14 @@ Me interesa esta pieza del catálogo:
 ¿Podríais confirmarme disponibilidad y estado? Gracias.`;
 
   modalBody.innerHTML = `
-    <div class="modal-media">
+    <div class="modal-media${imgs.length ? "" : " modal-media-empty"}">
       ${imgs.length
         ? `<img id="modal-main-img" src="${escapeHtml(imgs[0])}" alt="${escapeHtml(pieza.art)}" onerror="this.style.opacity=.15">`
-        : `<div class="no-photo">Sin foto disponible</div>`}
+        : `<div class="modal-placeholder">
+             <img src="assets/logo.png" alt="">
+             <span>Sin foto disponible</span>
+             <small>Consulta detalles por WhatsApp</small>
+           </div>`}
       ${imgs.length > 1 ? `
         <div class="modal-thumbs">
           ${imgs.slice(0, 5).map((u, i) => `
