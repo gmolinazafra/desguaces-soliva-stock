@@ -44,6 +44,27 @@ function toPrice(x) {
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
 }
 
+// Convierte una fecha del CSV a un número entero comparable (timestamp en segundos).
+// Acepta los formatos más típicos que pueden venir de CRVNET:
+//   2026-05-20 12:34:56  ·  2026-05-20  ·  20/05/2026 12:34  ·  20/05/2026  ·  20-05-2026
+function toTimestamp(x) {
+  const s = String(x ?? "").trim();
+  if (!s) return 0;
+  // ISO: 2026-05-20[ T]hh:mm[:ss]
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (m) {
+    const d = new Date(+m[1], +m[2] - 1, +m[3], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+    return Math.floor(d.getTime() / 1000);
+  }
+  // DD/MM/YYYY o DD-MM-YYYY [hh:mm[:ss]]
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (m) {
+    const d = new Date(+m[3], +m[2] - 1, +m[1], +(m[4]||0), +(m[5]||0), +(m[6]||0));
+    return Math.floor(d.getTime() / 1000);
+  }
+  return 0;
+}
+
 // Parser CSV con separador ';' que respeta comillas
 function parseCSV(text, sep = ";") {
   const rows = [];
@@ -76,7 +97,7 @@ console.log(`  Cabeceras: ${header.join(", ")}`);
 
 const col = Object.fromEntries(header.map((h, i) => [h, i]));
 const need = ["refid","familia","articulo","marca","modelo","modeloinicio","modelofin",
-              "motorversion","precio","notapublica","refvisual","refcatalogo","imgs"];
+              "motorversion","precio","notapublica","refvisual","refcatalogo","factualiza","imgs"];
 for (const k of need) {
   if (!(k in col)) console.warn(`  AVISO: falta columna '${k}' en el CSV`);
 }
@@ -105,6 +126,7 @@ for (const r of rows) {
   const nota   = (r[col.notapublica] || "").trim();
   const rv     = (r[col.refvisual] || "").trim();
   const rc     = (r[col.refcatalogo] || "").trim();
+  const ts     = toTimestamp(r[col.factualiza]); // fecha de actualización en CRVNET (timestamp en segundos)
   const imgsRaw = (r[col.imgs] || "").trim();
   const imgs = imgsRaw
     ? imgsRaw.split(",").map(s => s.trim()).filter(s => /^https?:\/\//.test(s))
@@ -127,12 +149,13 @@ for (const r of rows) {
     n: nota || undefined,
     rv: rv || undefined,
     rc: rc || undefined,
+    u: ts || undefined,
   };
   if (!families.has(familia)) families.set(familia, []);
   families.get(familia).push(pieza);
 
   // Entrada del índice como ARRAY posicional (ahorra ~30% vs objetos):
-  // [id, familia, marca, modelo, y0, y1, precio, hasImg, articulo, textoBusqueda]
+  // [id, familia, marca, modelo, y0, y1, precio, hasImg, articulo, textoBusqueda, updatedTs]
   const txt = `${refid} ${articulo} ${marca} ${modelo} ${motor} ${rv} ${rc}`.toLowerCase();
   indexAll.push([
     refid,
@@ -145,6 +168,7 @@ for (const r of rows) {
     imgs.length ? 1 : 0,
     articulo,
     txt,
+    ts,
   ]);
 
   if (marca) {
