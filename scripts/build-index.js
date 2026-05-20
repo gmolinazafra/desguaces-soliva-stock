@@ -109,9 +109,10 @@ for (const r of rows) {
   const imgs = imgsRaw
     ? imgsRaw.split(",").map(s => s.trim()).filter(s => /^https?:\/\//.test(s))
     : [];
-  // Política: solo se publican piezas con al menos una foto.
-  if (!imgs.length) { skipped++; continue; }
-  withImg++;
+  // Antes filtrábamos las piezas sin foto, ahora se incluyen TODAS.
+  // Las sin foto NO aparecerán en el grid (filtro hasImg=1 en el front),
+  // pero SÍ se podrán encontrar por el buscador y los filtros.
+  if (imgs.length) withImg++;
 
   // Pieza completa para el JSON de familia (claves cortas → menos peso)
   const pieza = {
@@ -154,8 +155,8 @@ for (const r of rows) {
   if (y1 != null && y1 >= 1950 && y1 <= 2035) { if (y1 < yearMin) yearMin = y1; if (y1 > yearMax) yearMax = y1; }
 }
 
-console.log(`  Procesadas: ${indexAll.length.toLocaleString("es-ES")}  (saltadas ${skipped.toLocaleString("es-ES")} sin foto)`);
-console.log(`  Con imagen: ${withImg.toLocaleString("es-ES")} (100% — política: solo piezas con foto)`);
+console.log(`  Procesadas: ${indexAll.length.toLocaleString("es-ES")}  (saltadas ${skipped.toLocaleString("es-ES")} sin refid v\u00e1lido)`);
+console.log(`  Con imagen: ${withImg.toLocaleString("es-ES")}  ·  Sin imagen (s\u00f3lo buscables): ${(indexAll.length - withImg).toLocaleString("es-ES")}`);
 
 // ---------- volcado ----------
 function writeJSON(p, obj) {
