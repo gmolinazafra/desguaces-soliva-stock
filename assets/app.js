@@ -138,7 +138,7 @@ function setYearPlaceholders(meta) {
 
 /* ---------- filtrado ---------- */
 /* Cada fila del índice: [id, fIdx, maIdx, mo, y0, y1, p, h, art, t] */
-const COL = { id:0, fIdx:1, maIdx:2, mo:3, y0:4, y1:5, p:6, h:7, art:8, t:9 };
+const COL = { id:0, fIdx:1, maIdx:2, mo:3, y0:4, y1:5, p:6, h:7, art:8, t:9, u:10 };
 
 function applyFilters() {
   if (!state.index) return;
@@ -186,6 +186,7 @@ function applyFilters() {
     case "price-desc": out.sort((a,b) => (rows[b][COL.p]||0) - (rows[a][COL.p]||0)); break;
     case "year-desc":  out.sort((a,b) => (rows[b][COL.y1]||rows[b][COL.y0]||0) - (rows[a][COL.y1]||rows[a][COL.y0]||0)); break;
     case "year-asc":   out.sort((a,b) => (rows[a][COL.y0]||rows[a][COL.y1]||9999) - (rows[b][COL.y0]||rows[b][COL.y1]||9999)); break;
+    case "newest":     out.sort((a,b) => (rows[b][COL.u]||0) - (rows[a][COL.u]||0)); break;
     // 'rel' = orden original del CSV (suele venir por fecha de entrada → más reciente arriba),
     // pero primero las que tienen foto (mejor presentación visual).
     default:
