@@ -67,6 +67,25 @@ function vehicleString(ma, mo, y0, y1) {
   return [ma, mo, yr].filter(Boolean).join(" · ");
 }
 
+// Normaliza la consulta igual que el índice (build-index.js): minúsculas, sin
+// acentos y unificando 1,5 -> 1.5. Debe coincidir EXACTAMENTE con normSearch
+// del build para que las búsquedas casen.
+function normSearch(s) {
+  return String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/(\d),(\d)/g, "$1.$2")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Palabras de relleno que se ignoran en la búsqueda, para que "motor de
+// arranque" case con "MOTOR ARRANQUE" y no rompa por los conectores.
+const STOPWORDS = new Set([
+  "de","del","la","el","los","las","un","una","unos","unas",
+  "en","con","para","por","y","o","a","al","su","sus",
+]);
+
 /* ---------- carga inicial ---------- */
 async function loadAll() {
   const status = document.getElementById("status");
@@ -151,9 +170,14 @@ function applyFilters() {
   const { rows, families, brands } = state.index;
   const f = state.filters;
 
-  const q = f.q.trim().toLowerCase();
-  // Búsqueda por palabras (todas deben aparecer)
-  const tokens = q ? q.split(/\s+/).filter(Boolean) : null;
+  const q = normSearch(f.q);
+  // Búsqueda por palabras (todas deben aparecer), ignorando palabras de relleno.
+  let tokens = q ? q.split(/\s+/).filter(Boolean) : null;
+  if (tokens) {
+    const sinRelleno = tokens.filter(t => !STOPWORDS.has(t));
+    // Si la consulta era solo relleno (raro), mantenemos los tokens originales.
+    tokens = sinRelleno.length ? sinRelleno : tokens;
+  }
 
   const familyIdx = f.family ? families.indexOf(f.family) : -1;
   const brandIdx  = f.brand  ? brands.indexOf(f.brand)    : -1;
