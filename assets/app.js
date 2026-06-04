@@ -5,9 +5,10 @@ const CONFIG = {
   // Número de WhatsApp en formato internacional sin '+', espacios ni guiones
   whatsappNumber: "34649903695",
 
-  metaUrl:    "data/meta.json",
-  indexUrl:   "data/index/all.json",
-  familyUrl:  fam => `data/familias/${slug(fam)}.json`,
+  metaUrl:       "data/meta.json",
+  indexUrl:      "data/index/all.json",
+  vehiculosUrl:  "data/vehiculos.json",
+  familyUrl:     fam => `data/familias/${slug(fam)}.json`,
 
   pageSize: 60,        // piezas por "página" en el grid
   searchDebounce: 200, // ms
@@ -17,6 +18,8 @@ const CONFIG = {
 const state = {
   meta: null,            // {families, brands, modelsByBrand, yearMin, yearMax, ...}
   index: null,           // {cols, families, brands, rows: [...]}
+  vehiculos: null,       // {codvehiculo: {ma,mo,ver,...}}  — carga diferida (1ª ficha)
+  vehiculosPromise: null,// promesa en curso para evitar descargas duplicadas
   filtered: [],          // array de fila-índice (no de objetos) que cumple los filtros
   pageShown: 0,
   filters: {
@@ -49,6 +52,9 @@ function formatPrice(n) {
   return new Intl.NumberFormat("es-ES", {
     style: "currency", currency: "EUR", maximumFractionDigits: 2,
   }).format(n);
+}
+function formatKm(n) {
+  return new Intl.NumberFormat("es-ES").format(n) + " km";
 }
 function debounce(fn, ms) {
   let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
@@ -330,6 +336,57 @@ async function getFamily(family) {
   return items;
 }
 
+/* Carga el catálogo de vehículos de origen bajo demanda (1ª vez que se abre
+   una ficha). Se cachea en memoria; si falla, se devuelve {} para no romper. */
+async function getVehiculos() {
+  if (state.vehiculos) return state.vehiculos;
+  if (state.vehiculosPromise) return state.vehiculosPromise;
+  const url = CONFIG.vehiculosUrl + (state.meta?.buildId ? `?v=${state.meta.buildId}` : "");
+  state.vehiculosPromise = fetch(url, { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : {})
+    .then(obj => { state.vehiculos = obj; return obj; })
+    .catch(() => { state.vehiculos = {}; return {}; });
+  return state.vehiculosPromise;
+}
+
+/* Construye el bloque HTML "Vehículo de origen" para la ficha. */
+function vehiculoOrigenHTML(veh, cod) {
+  if (!veh) return "";
+  const row = (label, value) =>
+    value ? `<div><dt>${label}</dt><dd>${escapeHtml(value)}</dd></div>` : "";
+
+  const titulo = [veh.ma, veh.mo].filter(Boolean).join(" ");
+  const fields =
+    row("Versión", veh.ver) +
+    row("Año", veh.an ? String(veh.an) : "") +
+    row("Combustible", veh.comb) +
+    row("Cambio", veh.cam) +
+    row("Color", veh.col) +
+    row("Puertas", veh.pu ? String(veh.pu) : "") +
+    row("Kilómetros", veh.km ? formatKm(veh.km) : "") +
+    row("Cód. motor", veh.cm) +
+    row("Bastidor", veh.bas ? veh.bas + "…" : "") +
+    row("Cód. vehículo", cod);
+
+  const fotos = (veh.im && veh.im.length) ? `
+    <div class="veh-fotos" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      ${veh.im.map(u => `
+        <button type="button" class="veh-thumb" data-img="${escapeHtml(u)}"
+          style="width:64px;height:64px;padding:0;border:1px solid var(--border,#2a2a2a);border-radius:8px;overflow:hidden;cursor:pointer;background:#000">
+          <img src="${escapeHtml(u)}" alt="" loading="lazy"
+            style="width:100%;height:100%;object-fit:cover" onerror="this.style.opacity=.2">
+        </button>`).join("")}
+    </div>` : "";
+
+  return `
+    <div class="veh-origen" style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border,#2a2a2a)">
+      <p class="card-cat">Vehículo de origen</p>
+      ${titulo ? `<p class="modal-vehicle" style="margin-top:2px">${escapeHtml(titulo)}</p>` : ""}
+      <dl class="modal-meta">${fields}</dl>
+      ${fotos}
+    </div>`;
+}
+
 /* ---------- modal de ficha ---------- */
 const modal = document.getElementById("product-modal");
 const modalBody = document.getElementById("modal-body");
@@ -358,17 +415,36 @@ async function openProduct(idx) {
     return;
   }
 
+  // Vehículo de origen (carga diferida del catálogo de vehículos).
+  let veh = null;
+  if (pieza.cv) {
+    try {
+      const vehiculos = await getVehiculos();
+      veh = vehiculos[pieza.cv] || null;
+    } catch { veh = null; }
+  }
+
   const imgs = pieza.im || [];
-  const veh = vehicleString(brand, pieza.mo, pieza.y0, pieza.y1);
+  const vehTexto = vehicleString(brand, pieza.mo, pieza.y0, pieza.y1);
   const motor = pieza.mt || "—";
   const refVisual = pieza.rv || "—";
   const refCatalogo = pieza.rc || "—";
+
+  // Datos del vehículo de origen para el mensaje de WhatsApp (ayuda al desguace
+  // a localizar la pieza por su vehículo donante).
+  let vehLineas = "";
+  if (veh) {
+    const titulo = [veh.ma, veh.mo, veh.an].filter(Boolean).join(" ");
+    vehLineas = `\n• Vehículo de origen: ${titulo}`;
+    if (veh.bas) vehLineas += `\n• Bastidor: ${veh.bas}…`;
+    if (pieza.cv) vehLineas += `\n• Cód. vehículo: ${pieza.cv}`;
+  }
 
   const msg = `Hola, escribo desde la web de Desguaces Soliva (desguacessoliva.com).
 Me interesa esta pieza del catálogo:
 
 • ${pieza.art}
-• Vehículo: ${veh}${motor !== "—" ? `\n• Motor: ${motor}` : ""}
+• Vehículo: ${vehTexto}${motor !== "—" ? `\n• Motor: ${motor}` : ""}${vehLineas}
 • Referencia: ${pieza.id}
 • Precio orientativo: ${formatPrice(pieza.p)}
 
@@ -395,7 +471,7 @@ Me interesa esta pieza del catálogo:
     <div class="modal-info">
       <p class="card-cat">${escapeHtml(family)}</p>
       <h2 id="modal-title">${escapeHtml(pieza.art || "Pieza sin nombre")}</h2>
-      <p class="modal-vehicle">${escapeHtml(veh) || "Sin vehículo asignado"}</p>
+      <p class="modal-vehicle">${escapeHtml(vehTexto) || "Sin vehículo asignado"}</p>
 
       ${pieza.n ? `<p class="modal-note">${escapeHtml(pieza.n)}</p>` : ""}
 
@@ -408,6 +484,8 @@ Me interesa esta pieza del catálogo:
         <div><dt>Ref. visual</dt><dd>${escapeHtml(refVisual)}</dd></div>
         <div><dt>Ref. catálogo</dt><dd>${escapeHtml(refCatalogo)}</dd></div>
       </dl>
+
+      ${vehiculoOrigenHTML(veh, pieza.cv)}
 
       <div class="modal-price-line">
         <span class="modal-price">${formatPrice(pieza.p)}</span>
@@ -424,13 +502,20 @@ Me interesa esta pieza del catálogo:
     </div>
   `;
 
-  // Galería (cambiar imagen al pulsar miniatura)
+  // Galería de la PIEZA (cambiar imagen al pulsar miniatura)
   const main = document.getElementById("modal-main-img");
   modalBody.querySelectorAll(".modal-thumbs button").forEach(b => {
     b.addEventListener("click", () => {
       modalBody.querySelectorAll(".modal-thumbs button").forEach(x => x.classList.remove("active"));
       b.classList.add("active");
       if (main) main.src = b.dataset.img;
+    });
+  });
+  // Fotos del VEHÍCULO de origen: al pulsar, se muestran en la imagen principal.
+  modalBody.querySelectorAll(".veh-thumb").forEach(b => {
+    b.addEventListener("click", () => {
+      if (main) main.src = b.dataset.img;
+      modalBody.querySelectorAll(".modal-thumbs button").forEach(x => x.classList.remove("active"));
     });
   });
 }
