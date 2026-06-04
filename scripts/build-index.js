@@ -43,6 +43,18 @@ function slug(s) {
     .replace(/^-+|-+$/g, "") || "otros";
 }
 
+// Normaliza texto para el índice de búsqueda: minúsculas, sin acentos y
+// unificando decimales con coma a punto (1,5 -> 1.5). DEBE coincidir con la
+// misma función del front (app.js) para que las consultas casen con el índice.
+function normSearch(s) {
+  return String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/(\d),(\d)/g, "$1.$2")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function toInt(x) {
   const n = parseInt(String(x ?? "").trim(), 10);
   return Number.isFinite(n) ? n : null;
@@ -209,9 +221,10 @@ for (const r of rows) {
   // Vehículo de origen: solo si la pieza referencia un codvehiculo válido que
   // exista en el CSV de vehículos (evitamos referencias colgantes).
   const cvRaw = (col.codvehiculo != null ? (r[col.codvehiculo] || "") : "").trim();
-  let cv;
+  let cv, vehForTxt = null;
   if (cvRaw && cvRaw !== "0" && vehiclesAll.has(cvRaw)) {
     cv = cvRaw;
+    vehForTxt = vehiclesAll.get(cvRaw);
     usedVehicles.add(cvRaw);
     withVeh++;
   }
@@ -237,7 +250,14 @@ for (const r of rows) {
 
   // Entrada del índice como ARRAY posicional (ahorra ~30% vs objetos):
   // [id, familia, marca, modelo, y0, y1, precio, hasImg, articulo, textoBusqueda, updatedTs]
-  const txt = `${refid} ${articulo} ${marca} ${modelo} ${motor} ${rv} ${rc}`.toLowerCase();
+  // El texto de búsqueda se ENRIQUECE con los datos del vehículo de origen
+  // (cilindrada/versión, combustible y código de motor), que es donde el cliente
+  // busca de forma natural ("motor arranque 1.5", "bomba diesel"...). Sin esto,
+  // la cilindrada no existe en la pieza (su motorversion es el código de motor).
+  const vehTxt = vehForTxt
+    ? `${vehForTxt.ver || ""} ${vehForTxt.comb || ""} ${vehForTxt.cm || ""}`
+    : "";
+  const txt = normSearch(`${refid} ${articulo} ${marca} ${modelo} ${motor} ${rv} ${rc} ${vehTxt}`);
   indexAll.push([
     refid,
     familia,
