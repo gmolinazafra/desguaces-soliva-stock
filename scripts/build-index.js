@@ -1,15 +1,23 @@
 // scripts/build-index.js
-// Lee data/stock.csv (descargado por sync-stock.js) y genera:
+// Lee data/stock.csv (piezas) y data/vehiculos.csv (vehículos de origen),
+// ambos descargados por sync-stock.js, y genera:
 //   data/meta.json                      → catálogos para selectores (≈ 24 KB / 8 KB gz)
 //   data/index/all.json                 → índice global (≈ 28 MB / 3.3 MB gz)
 //   data/familias/<slug>.json           → fichas completas por familia (carga bajo demanda)
+//   data/vehiculos.json                 → vehículos de origen indexados por codvehiculo
+//                                         (carga bajo demanda al abrir una ficha)
+//
+// Cada pieza con vehículo de origen guarda su 'cv' (codvehiculo). El front lo
+// usa para mostrar el bloque "Vehículo de origen" en la ficha, igual que en
+// Red Desguace (tabla vehiculos aparte, bastidor anonimizado a 10 caracteres).
 //
 // Diseñado para que GitHub Pages lo sirva gzip por defecto.
 
 const fs   = require("fs");
 const path = require("path");
 
-const SRC = path.join(process.cwd(), "data", "stock.csv");
+const SRC     = path.join(process.cwd(), "data", "stock.csv");
+const SRC_VEH = path.join(process.cwd(), "data", "vehiculos.csv");
 const OUT_FAM = path.join(process.cwd(), "data", "familias");
 const OUT_IDX = path.join(process.cwd(), "data", "index");
 
@@ -22,6 +30,10 @@ fs.mkdirSync(OUT_FAM, { recursive: true });
 fs.mkdirSync(OUT_IDX, { recursive: true });
 
 // ---------- utilidades ----------
+function stripBOM(s) {
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s;
+}
+
 function slug(s) {
   return (s || "")
     .toLowerCase()
@@ -42,6 +54,14 @@ function toPrice(x) {
   const s = String(x ?? "").trim().replace(/\./g, "").replace(",", ".");
   const n = parseFloat(s);
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+}
+
+// Anonimiza el bastidor dejando solo los primeros 10 caracteres (igual que el
+// trigger trg_recortar_bastidor de Red Desguace). El front añade el "…".
+function anonBastidor(x) {
+  const s = String(x ?? "").trim().toUpperCase();
+  if (!s) return undefined;
+  return s.slice(0, 10);
 }
 
 // Convierte una fecha del CSV a un número entero comparable (timestamp en segundos).
@@ -88,16 +108,65 @@ function parseCSV(text, sep = ";") {
   return { header: rows.shift().map(h => h.trim()), rows };
 }
 
-// ---------- lectura ----------
-console.log("Leyendo CSV…");
-const text = fs.readFileSync(SRC, "utf-8");
+// ---------- vehículos de origen ----------
+// Mapa codvehiculo -> objeto compacto del vehículo donante.
+// Se cruza por la columna 'codvehiculo' de cada pieza.
+const vehiclesAll = new Map();
+if (fs.existsSync(SRC_VEH)) {
+  console.log("Leyendo CSV de vehículos…");
+  const vtext = stripBOM(fs.readFileSync(SRC_VEH, "utf-8"));
+  const { header: vheader, rows: vrows } = parseCSV(vtext);
+  console.log(`  Filas vehículos: ${vrows.length.toLocaleString("es-ES")}`);
+  const vcol = Object.fromEntries(vheader.map((h, i) => [h, i]));
+  const vneed = ["codvehiculo","marca","modelo","motorversion","cambioversion",
+                 "anoversion","bastidor","color","puertas","kilometraje",
+                 "tipocombustible","codigomotor","imgs"];
+  for (const k of vneed) {
+    if (!(k in vcol)) console.warn(`  AVISO: falta columna '${k}' en el CSV de vehículos`);
+  }
+
+  for (const r of vrows) {
+    const cod = (r[vcol.codvehiculo] || "").trim();
+    if (!cod || cod === "0") continue;
+
+    const km   = toInt(r[vcol.kilometraje]);
+    const pu   = toInt(r[vcol.puertas]);
+    const vimgsRaw = (r[vcol.imgs] || "").trim();
+    const vimgs = vimgsRaw
+      ? vimgsRaw.split(",").map(s => s.trim()).filter(s => /^https?:\/\//.test(s)).slice(0, 4)
+      : [];
+
+    vehiclesAll.set(cod, {
+      ma:   (r[vcol.marca] || "").trim().toUpperCase() || undefined,
+      mo:   (r[vcol.modelo] || "").trim() || undefined,
+      ver:  (r[vcol.motorversion] || "").trim() || undefined,
+      cam:  (r[vcol.cambioversion] || "").trim() || undefined,
+      an:   toInt(r[vcol.anoversion]) || undefined,
+      bas:  anonBastidor(r[vcol.bastidor]),
+      col:  (r[vcol.color] || "").trim() || undefined,
+      pu:   (pu && pu > 0) ? pu : undefined,
+      km:   (km && km > 0) ? km : undefined,
+      comb: (r[vcol.tipocombustible] || "").trim() || undefined,
+      cm:   (r[vcol.codigomotor] || "").trim() || undefined,
+      im:   vimgs.length ? vimgs : undefined,
+    });
+  }
+  console.log(`  Vehículos cargados: ${vehiclesAll.size.toLocaleString("es-ES")}`);
+} else {
+  console.warn(`  AVISO: no existe ${SRC_VEH}. Se construye el catálogo SIN vehículo de origen.`);
+}
+
+// ---------- lectura piezas ----------
+console.log("\nLeyendo CSV de piezas…");
+const text = stripBOM(fs.readFileSync(SRC, "utf-8"));
 const { header, rows } = parseCSV(text);
 console.log(`  Filas crudas: ${rows.length.toLocaleString("es-ES")}`);
 console.log(`  Cabeceras: ${header.join(", ")}`);
 
 const col = Object.fromEntries(header.map((h, i) => [h, i]));
 const need = ["refid","familia","articulo","marca","modelo","modeloinicio","modelofin",
-              "motorversion","precio","notapublica","refvisual","refcatalogo","factualiza","imgs"];
+              "motorversion","precio","notapublica","refvisual","refcatalogo","factualiza",
+              "codvehiculo","imgs"];
 for (const k of need) {
   if (!(k in col)) console.warn(`  AVISO: falta columna '${k}' en el CSV`);
 }
@@ -106,8 +175,9 @@ for (const k of need) {
 const families = new Map();        // familia → array de piezas (ficha completa)
 const indexAll = [];               // índice global ligero
 const brandsModels = new Map();    // marca → Set(modelos)
+const usedVehicles = new Set();    // codvehiculos realmente referenciados por piezas
 let yearMin = Infinity, yearMax = -Infinity;
-let skipped = 0, withImg = 0;
+let skipped = 0, withImg = 0, withVeh = 0;
 
 for (const r of rows) {
   const refid = (r[col.refid] || "").trim();
@@ -136,6 +206,16 @@ for (const r of rows) {
   // pero SÍ se podrán encontrar por el buscador y los filtros.
   if (imgs.length) withImg++;
 
+  // Vehículo de origen: solo si la pieza referencia un codvehiculo válido que
+  // exista en el CSV de vehículos (evitamos referencias colgantes).
+  const cvRaw = (col.codvehiculo != null ? (r[col.codvehiculo] || "") : "").trim();
+  let cv;
+  if (cvRaw && cvRaw !== "0" && vehiclesAll.has(cvRaw)) {
+    cv = cvRaw;
+    usedVehicles.add(cvRaw);
+    withVeh++;
+  }
+
   // Pieza completa para el JSON de familia (claves cortas → menos peso)
   const pieza = {
     id: refid,
@@ -150,6 +230,7 @@ for (const r of rows) {
     rv: rv || undefined,
     rc: rc || undefined,
     u: ts || undefined,
+    cv: cv || undefined,
   };
   if (!families.has(familia)) families.set(familia, []);
   families.get(familia).push(pieza);
@@ -181,6 +262,7 @@ for (const r of rows) {
 
 console.log(`  Procesadas: ${indexAll.length.toLocaleString("es-ES")}  (saltadas ${skipped.toLocaleString("es-ES")} sin refid v\u00e1lido)`);
 console.log(`  Con imagen: ${withImg.toLocaleString("es-ES")}  ·  Sin imagen (s\u00f3lo buscables): ${(indexAll.length - withImg).toLocaleString("es-ES")}`);
+console.log(`  Con veh\u00edculo de origen: ${withVeh.toLocaleString("es-ES")}  ·  Veh\u00edculos referenciados: ${usedVehicles.size.toLocaleString("es-ES")}`);
 
 // ---------- volcado ----------
 function writeJSON(p, obj) {
@@ -229,7 +311,16 @@ const indexPayload = {
 const idxSize = writeJSON(path.join(OUT_IDX, "all.json"), indexPayload);
 console.log(`  data/index/all.json: ${(idxSize/1024/1024).toFixed(2)} MB (~${(idxSize/1024/1024/8).toFixed(2)} MB gzip estimado)`);
 
-// 3) Meta
+// 3) Vehículos de origen (solo los referenciados por alguna pieza en stock)
+console.log("\nGenerando vehículos de origen…");
+const vehiclesOut = {};
+for (const cod of usedVehicles) {
+  if (vehiclesAll.has(cod)) vehiclesOut[cod] = vehiclesAll.get(cod);
+}
+const vehSize = writeJSON(path.join(process.cwd(), "data", "vehiculos.json"), vehiclesOut);
+console.log(`  data/vehiculos.json: ${Object.keys(vehiclesOut).length.toLocaleString("es-ES")} vehículos · ${(vehSize/1024/1024).toFixed(2)} MB`);
+
+// 4) Meta
 console.log("\nGenerando meta…");
 const now = new Date();
 const meta = {
