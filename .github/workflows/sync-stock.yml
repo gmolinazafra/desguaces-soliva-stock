@@ -2,7 +2,7 @@ name: Sync stock + deploy to Pages
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # cada 6 h (UTC)
+    - cron: "0 2 * * *"   # una vez al día, 02:00 UTC (04:00 CEST verano / 03:00 CET invierno)
   push:
     branches: [main]
     paths:
@@ -39,23 +39,25 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Download stock.csv from FTP
+      - name: Download CSVs from FTP (stock + vehiculos)
         env:
-          FTP_HOST:        ${{ secrets.FTP_HOST }}
-          FTP_PORT:        ${{ secrets.FTP_PORT }}
-          FTP_USER:        ${{ secrets.FTP_USER }}
-          FTP_PASSWORD:    ${{ secrets.FTP_PASSWORD }}
-          FTP_REMOTE_PATH: ${{ secrets.FTP_REMOTE_PATH }}
-          FTP_SECURE:      ${{ secrets.FTP_SECURE }}
+          FTP_HOST:            ${{ secrets.FTP_HOST }}
+          FTP_PORT:            ${{ secrets.FTP_PORT }}
+          FTP_USER:            ${{ secrets.FTP_USER }}
+          FTP_PASSWORD:        ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_PATH:     ${{ secrets.FTP_REMOTE_PATH }}
+          FTP_REMOTE_PATH_VEH: ${{ secrets.FTP_REMOTE_PATH_VEH }}
+          FTP_SECURE:          ${{ secrets.FTP_SECURE }}
         run: node scripts/sync-stock.js
 
-      - name: Build index + family JSONs
+      - name: Build index + family JSONs + vehiculos.json
         run: node scripts/build-index.js
 
       - name: Prepare site for Pages
         run: |
           rm -rf node_modules
           rm -f data/stock.csv
+          rm -f data/vehiculos.csv
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
