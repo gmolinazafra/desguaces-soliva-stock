@@ -10,7 +10,7 @@ const CONFIG = {
   vehiculosUrl:  "data/vehiculos.json",
   familyUrl:     fam => `data/familias/${slug(fam)}.json`,
 
-  pageSize: 60,        // piezas por "página" en el grid
+  pageSize: 36,        // piezas por "página" en el grid
   searchDebounce: 200, // ms
 };
 
@@ -261,9 +261,9 @@ function renderNextPage() {
     card.className = "card";
     if (!row[COL.h]) card.classList.add("no-img");
     card.dataset.idx = idx;
-    card.style.animationDelay = `${Math.min((i - start) * 25, 500)}ms`;
+    card.style.animationDelay = `${Math.min((i - start) * 12, 220)}ms`;
     const mediaInner = row[COL.h]
-      ? `<img loading="lazy" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
+      ? `<img loading="${i < 8 ? "eager" : "lazy"}" decoding="async" fetchpriority="${i < 4 ? "high" : "auto"}" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
       : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
       <div class="card-media">
@@ -336,6 +336,7 @@ async function hydrateImages(start, end) {
       for (const { id, img } of list) {
         const p = byId.get(id);
         if (p && p.im && p.im[0]) {
+          img.onload = () => img.classList.add("is-loaded");
           img.src = p.im[0];
           img.removeAttribute("data-needs-img");
           img.addEventListener("error", () => { img.style.opacity = ".15"; }, { once: true });
