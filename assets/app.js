@@ -281,7 +281,7 @@ function renderNextPage() {
     card.dataset.idx = idx;
     card.style.animationDelay = `${Math.min((i - start) * 25, 500)}ms`;
     const mediaInner = row[COL.h]
-      ? `<img loading="lazy" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
+      ? `<img loading="lazy" data-needs-img="1" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">`
       : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
       <div class="card-media">
@@ -356,6 +356,7 @@ async function hydrateImages(start, end) {
         if (p && p.im && p.im[0]) {
           img.src = p.im[0];
           img.removeAttribute("data-needs-img");
+          img.style.opacity = "1";
           img.addEventListener("error", () => { img.style.opacity = ".15"; }, { once: true });
         }
       }
