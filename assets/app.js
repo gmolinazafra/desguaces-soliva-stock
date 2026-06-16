@@ -270,6 +270,11 @@ function renderNextPage() {
     const price = row[COL.p];
     const title = capitalizeFirst(row[COL.art] || "Sin nombre");
 
+    const priceHtml = (price && price > 0) ? (() => {
+      const iv = precioIva(price);
+      return `<span class="card-price-wrap"><span class="card-price">${iv.conIva}</span><span class="card-iva-badge">IVA inc.</span></span>`;
+    })() : `<span class="card-price">Consultar</span>`;
+
     const card = document.createElement("article");
     card.className = "card";
     if (!row[COL.h]) card.classList.add("no-img");
@@ -288,13 +293,7 @@ function renderNextPage() {
         <h3 class="card-title">${escapeHtml(title)}</h3>
         <p class="card-vehicle">${escapeHtml(vehicleString(brand, model, y0, y1))}</p>
         <div class="card-foot">
-          ${price && price > 0 ? (() => {
-            const iv = precioIva(price);
-            return `<span class="card-price-wrap">
-              <span class="card-price">${iv.conIva}</span>
-              <span class="card-iva-badge">IVA inc.</span>
-            </span>`;
-          })() : `<span class="card-price">Consultar</span>`}
+          ${priceHtml}
           <span class="card-year">${y0 || y1 || ""}</span>
         </div>
       </div>
@@ -531,7 +530,8 @@ Me interesa esta pieza del catálogo:
       ${vehiculoOrigenHTML(veh, pieza.cv)}
 
       <div class="modal-price-line">
-        ${pieza.p && pieza.p > 0 ? (() => {
+        ${(() => {
+          if (!pieza.p || pieza.p <= 0) return `<span class="modal-price">Consultar precio</span>`;
           const iv = precioIva(pieza.p);
           return `
             <div class="modal-price-block">
@@ -542,7 +542,7 @@ Me interesa esta pieza del catálogo:
               <span>Precio sin IVA: <strong>${iv.sinIva}</strong></span>
               <span>IVA (21 %): <strong>${iv.iva}</strong></span>
             </div>`;
-        })() : `<span class="modal-price">Consultar precio</span>`}
+        })()}
       </div>
 
       <a class="cta-wa" href="${whatsappUrl(msg)}" target="_blank" rel="noopener">
