@@ -10,7 +10,7 @@ const CONFIG = {
   vehiculosUrl:  "data/vehiculos.json",
   familyUrl:     fam => `data/familias/${slug(fam)}.json`,
 
-  pageSize: 36,        // piezas por "página" en el grid
+  pageSize: 60,        // piezas por "página" en el grid
   searchDebounce: 200, // ms
 };
 
@@ -47,11 +47,24 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, ch =>
     ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 }
+const IVA = 0.21; // IVA estándar 21 %
+
 function formatPrice(n) {
   if (!n || n <= 0) return "Consultar";
   return new Intl.NumberFormat("es-ES", {
     style: "currency", currency: "EUR", maximumFractionDigits: 2,
   }).format(n);
+}
+
+// Devuelve {sinIva, iva, conIva} todos como string formateado en euros.
+function precioIva(n) {
+  const sinIva = n || 0;
+  const iva    = Math.round(sinIva * IVA * 100) / 100;
+  const conIva = Math.round((sinIva + iva) * 100) / 100;
+  const fmt = v => new Intl.NumberFormat("es-ES", {
+    style: "currency", currency: "EUR", maximumFractionDigits: 2,
+  }).format(v);
+  return { sinIva: fmt(sinIva), iva: fmt(iva), conIva: fmt(conIva), conIvaNum: conIva };
 }
 function formatKm(n) {
   return new Intl.NumberFormat("es-ES").format(n) + " km";
@@ -261,9 +274,9 @@ function renderNextPage() {
     card.className = "card";
     if (!row[COL.h]) card.classList.add("no-img");
     card.dataset.idx = idx;
-    card.style.animationDelay = `${Math.min((i - start) * 12, 220)}ms`;
+    card.style.animationDelay = `${Math.min((i - start) * 25, 500)}ms`;
     const mediaInner = row[COL.h]
-      ? `<img loading="${i < 8 ? "eager" : "lazy"}" decoding="async" fetchpriority="${i < 4 ? "high" : "auto"}" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
+      ? `<img loading="lazy" src="" data-needs-img="1" alt="${escapeHtml(title)}">`
       : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
       <div class="card-media">
@@ -275,7 +288,13 @@ function renderNextPage() {
         <h3 class="card-title">${escapeHtml(title)}</h3>
         <p class="card-vehicle">${escapeHtml(vehicleString(brand, model, y0, y1))}</p>
         <div class="card-foot">
-          <span class="card-price">${formatPrice(price)}</span>
+          ${price && price > 0 ? (() => {
+            const iv = precioIva(price);
+            return `<span class="card-price-wrap">
+              <span class="card-price">${iv.conIva}</span>
+              <span class="card-iva-badge">IVA inc.</span>
+            </span>`;
+          })() : `<span class="card-price">Consultar</span>`}
           <span class="card-year">${y0 || y1 || ""}</span>
         </div>
       </div>
@@ -336,7 +355,6 @@ async function hydrateImages(start, end) {
       for (const { id, img } of list) {
         const p = byId.get(id);
         if (p && p.im && p.im[0]) {
-          img.onload = () => img.classList.add("is-loaded");
           img.src = p.im[0];
           img.removeAttribute("data-needs-img");
           img.addEventListener("error", () => { img.style.opacity = ".15"; }, { once: true });
@@ -471,7 +489,7 @@ Me interesa esta pieza del catálogo:
 • ${pieza.art}
 • Vehículo: ${vehTexto}${motor !== "—" ? `\n• Motor: ${motor}` : ""}${vehLineas}
 • Referencia: ${pieza.id}
-• Precio orientativo: ${formatPrice(pieza.p)}
+• Precio orientativo: ${pieza.p && pieza.p > 0 ? precioIva(pieza.p).conIva + ' (IVA incluido)' : 'Consultar'}
 
 ¿Podríais confirmarme disponibilidad y estado? Gracias.`;
 
@@ -513,8 +531,18 @@ Me interesa esta pieza del catálogo:
       ${vehiculoOrigenHTML(veh, pieza.cv)}
 
       <div class="modal-price-line">
-        <span class="modal-price">${formatPrice(pieza.p)}</span>
-        <span class="modal-price-note">Precio orientativo</span>
+        ${pieza.p && pieza.p > 0 ? (() => {
+          const iv = precioIva(pieza.p);
+          return `
+            <div class="modal-price-block">
+              <span class="modal-price">${iv.conIva}</span>
+              <span class="modal-price-note">IVA incluido</span>
+            </div>
+            <div class="modal-price-detail">
+              <span>Precio sin IVA: <strong>${iv.sinIva}</strong></span>
+              <span>IVA (21 %): <strong>${iv.iva}</strong></span>
+            </div>`;
+        })() : `<span class="modal-price">Consultar precio</span>`}
       </div>
 
       <a class="cta-wa" href="${whatsappUrl(msg)}" target="_blank" rel="noopener">
