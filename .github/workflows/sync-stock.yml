@@ -2,7 +2,7 @@ name: Sync stock + deploy to Pages
 
 on:
   schedule:
-    - cron: "0 2 * * *"   # una vez al día, 02:00 UTC (04:00 CEST verano / 03:00 CET invierno)
+    - cron: "0 2 * * *"   # cada 24 horas, 02:00 UTC
   push:
     branches: [main]
     paths:

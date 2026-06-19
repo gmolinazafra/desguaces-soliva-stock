@@ -315,7 +315,7 @@ const brandIdx = Object.fromEntries(brandList.map((b, i) => [b, i]));
 
 // Reemplazar familia y marca por su índice en cada entrada
 const indexCompact = indexAll.map(row => {
-  // [id, familia, marca, modelo, y0, y1, p, h, t]
+  // [id, familia, marca, modelo, y0, y1, p, h, art, t, u]
   row[1] = familyIdx[row[1]] ?? -1;
   row[2] = brandIdx[row[2]] ?? -1;
   return row;
@@ -323,7 +323,7 @@ const indexCompact = indexAll.map(row => {
 
 const indexPayload = {
   // Esquema de columnas para que el cliente sepa interpretar los arrays
-  cols: ["id", "fIdx", "maIdx", "mo", "y0", "y1", "p", "h", "art", "t"],
+  cols: ["id", "fIdx", "maIdx", "mo", "y0", "y1", "p", "h", "art", "t", "u"],
   families: familyList,
   brands: brandList,
   rows: indexCompact,
