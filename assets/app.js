@@ -197,13 +197,11 @@ function applyFilters() {
   const model     = f.model || "";
   const y0Filter  = f.y0;
   const y1Filter  = f.y1;
-  const homeOnlyWithPhoto = !q && !f.family && !f.brand && !model && y0Filter == null && y1Filter == null;
 
   const out = [];
   // Iteramos sobre TODOS los índices (es un loop sobre 127k arrays cortos: <50ms)
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    if (homeOnlyWithPhoto && !row[COL.h]) continue;
     if (familyIdx !== -1 && row[COL.fIdx] !== familyIdx) continue;
     if (brandIdx !== -1 && row[COL.maIdx] !== brandIdx) continue;
     if (model && row[COL.mo] !== model) continue;
@@ -231,7 +229,11 @@ function applyFilters() {
     case "price-desc": out.sort((a,b) => (rows[b][COL.p]||0) - (rows[a][COL.p]||0)); break;
     case "year-desc":  out.sort((a,b) => (rows[b][COL.y1]||rows[b][COL.y0]||0) - (rows[a][COL.y1]||rows[a][COL.y0]||0)); break;
     case "year-asc":   out.sort((a,b) => (rows[a][COL.y0]||rows[a][COL.y1]||9999) - (rows[b][COL.y0]||rows[b][COL.y1]||9999)); break;
-    case "newest":     out.sort((a,b) => (rows[b][COL.u]||0) - (rows[a][COL.u]||0)); break;
+    case "newest":     out.sort((a,b) => {
+      const imgDiff = (rows[b][COL.h]||0) - (rows[a][COL.h]||0);
+      if (imgDiff !== 0) return imgDiff;
+      return (rows[b][COL.u]||0) - (rows[a][COL.u]||0);
+    }); break;
     // 'rel' = destacadas: primero las que tienen foto y después el orden original del CSV.
     default:
       out.sort((a, b) => {
