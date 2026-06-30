@@ -58,6 +58,11 @@ jobs:
           rm -rf node_modules
           rm -f data/stock.csv
           rm -f data/vehiculos.csv
+          # Cache-busting de assets/app.js: añadimos el SHA corto del commit como
+          # query string en cada deploy, para que el navegador/CDN nunca sirvan
+          # una copia vieja del script tras un cambio de código (el campo solo
+          # cambia cuando cambia el commit desplegado, no en cada cron sin código nuevo).
+          sed -i "s#assets/app\\.js\"#assets/app.js?v=${GITHUB_SHA::7}\"#" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
