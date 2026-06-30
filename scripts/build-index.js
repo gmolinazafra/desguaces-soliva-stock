@@ -186,6 +186,8 @@ for (const k of need) {
 // ---------- normalización ----------
 const families = new Map();        // familia → array de piezas (ficha completa)
 const indexAll = [];               // índice global ligero
+const imagesAll = [];              // primera foto de cada pieza, mismo orden/índice que indexAll
+                                    // (solo se usa para enriquecer first.json; NO se escribe en all.json)
 const brandsModels = new Map();    // marca → Set(modelos)
 const usedVehicles = new Set();    // codvehiculos realmente referenciados por piezas
 let yearMin = Infinity, yearMax = -Infinity;
@@ -271,6 +273,7 @@ for (const r of rows) {
     txt,
     ts,
   ]);
+  imagesAll.push(imgs[0] || "");
 
   if (marca) {
     if (!brandsModels.has(marca)) brandsModels.set(marca, new Set());
@@ -337,17 +340,25 @@ console.log(`  data/index/all.json: ${(idxSize/1024/1024).toFixed(2)} MB (~${(id
 //     el front lo pinta al instante en vez de esperar al índice completo
 //     (~28 MB / ~3 MB gz), que sigue cargando en segundo plano y sustituye
 //     este lote sin que el usuario lo note.
+//     Además, cada fila lleva una 12ª columna ("im0") con la URL de su
+//     primera foto, así las cards iniciales pintan la imagen directamente
+//     sin esperar al fetch de su JSON de familia (evita el parpadeo en
+//     blanco de los primeros segundos). all.json NO lleva esta columna a
+//     propósito, para no engordar el índice completo con 180k URLs.
 console.log("\nGenerando primer lote (pintura instantánea)…");
 const FIRST_N = 600;
-const firstRows = [...indexCompact]
-  .sort((a, b) => {
+const firstOrder = indexCompact
+  .map((_, i) => i)
+  .sort((ia, ib) => {
+    const a = indexCompact[ia], b = indexCompact[ib];
     const imgDiff = (b[7] || 0) - (a[7] || 0); // h = tiene foto
     if (imgDiff !== 0) return imgDiff;
     return (b[10] || 0) - (a[10] || 0);        // u = fecha actualización
   })
   .slice(0, FIRST_N);
+const firstRows = firstOrder.map(i => [...indexCompact[i], imagesAll[i] || ""]);
 const firstPayload = {
-  cols: indexPayload.cols,
+  cols: [...indexPayload.cols, "im0"],
   families: familyList,
   brands: brandList,
   rows: firstRows,

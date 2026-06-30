@@ -207,7 +207,7 @@ function setYearPlaceholders(meta) {
 
 /* ---------- filtrado ---------- */
 /* Cada fila del índice: [id, fIdx, maIdx, mo, y0, y1, p, h, art, t] */
-const COL = { id:0, fIdx:1, maIdx:2, mo:3, y0:4, y1:5, p:6, h:7, art:8, t:9, u:10 };
+const COL = { id:0, fIdx:1, maIdx:2, mo:3, y0:4, y1:5, p:6, h:7, art:8, t:9, u:10, im0:11 };
 
 function applyFilters() {
   if (!state.index) return;
@@ -315,7 +315,11 @@ function renderNextPage() {
     card.dataset.idx = idx;
     card.style.animationDelay = `${Math.min((i - start) * 25, 500)}ms`;
     const mediaInner = row[COL.h]
-      ? `<img loading="lazy" data-needs-img="1" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">`
+      ? (row[COL.im0]
+          // La fila ya trae la URL de la foto (primer lote): se pinta directa,
+          // sin esperar al fetch del JSON de familia.
+          ? `<img loading="lazy" src="${escapeHtml(row[COL.im0])}" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.opacity=.15">`
+          : `<img loading="lazy" data-needs-img="1" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">`)
       : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
       <div class="card-media">
