@@ -6,6 +6,7 @@ const CONFIG = {
   whatsappNumber: "34649903695",
 
   metaUrl:       "data/meta.json",
+  firstUrl:      "data/index/first.json",
   indexUrl:      "data/index/all.json",
   vehiculosUrl:  "data/vehiculos.json",
   familyUrl:     fam => `data/familias/${slug(fam)}.json`,
@@ -105,12 +106,15 @@ async function loadAll() {
   try {
     status.textContent = "Cargando catálogo…";
 
-    const [meta, index] = await Promise.all([
+    // 1) Carga rápida: meta + primer lote (pocos KB) → grid visible al instante,
+    //    sin esperar al índice completo (~28 MB / ~3 MB gz).
+    const [meta, first] = await Promise.all([
       fetch(CONFIG.metaUrl,  { cache: "no-cache" }).then(r => r.json()),
-      fetch(CONFIG.indexUrl, { cache: "no-cache" }).then(r => r.json()),
+      fetch(CONFIG.firstUrl, { cache: "no-cache" }).then(r => r.json()),
     ]);
     state.meta = meta;
-    state.index = index;
+    state.index = first;
+    state.indexFull = false;
 
     // Hero (formato número con separadores en español)
     document.getElementById("hero-count").textContent =
@@ -124,9 +128,36 @@ async function loadAll() {
     setYearPlaceholders(meta);
 
     applyFilters();
+
+    // 2) En segundo plano: índice completo. La URL lleva el buildId (cambia
+    //    una vez al día, cuando corre el cron), así el navegador la cachea
+    //    de verdad entre visitas del mismo día en vez de re-descargar 3 MB
+    //    cada vez. Si falla, el sitio sigue funcionando con el primer lote
+    //    (navegación y búsqueda limitadas a esas piezas).
+    const indexUrl = CONFIG.indexUrl + (meta.buildId ? `?v=${meta.buildId}` : "");
+    fetch(indexUrl)
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(full => {
+        state.index = full;
+        state.indexFull = true;
+        silentRefresh();
+      })
+      .catch(err => console.warn("No se pudo cargar el índice completo, se mantiene el primer lote:", err));
   } catch (err) {
     console.error(err);
     status.textContent = "No se pudo cargar el catálogo. Vuelve a intentarlo en unos minutos.";
+  }
+}
+
+/* Tras sustituir el primer lote por el índice completo, reaplicamos los
+   filtros/orden actuales y restauramos aprox. el nº de piezas ya mostradas,
+   para no resetear el scroll de alguien que ya estaba mirando el catálogo. */
+function silentRefresh() {
+  if (!state.index) return;
+  const prevShown = state.pageShown;
+  applyFilters();
+  while (state.pageShown < prevShown && state.pageShown < state.filtered.length) {
+    renderNextPage();
   }
 }
 
@@ -374,7 +405,7 @@ async function getFamily(family) {
   if (state.familyCache.has(family)) return state.familyCache.get(family);
   // Añadimos buildId como query string para invalidar caché HTTP cuando hay nuevo deploy
   const url = CONFIG.familyUrl(family) + (state.meta?.buildId ? `?v=${state.meta.buildId}` : "");
-  const promise = fetch(url, { cache: "no-cache" })
+  const promise = fetch(url)
     .then(r => r.ok ? r.json() : Promise.reject(r.status));
   state.familyCache.set(family, promise);
   const items = await promise;
@@ -388,7 +419,7 @@ async function getVehiculos() {
   if (state.vehiculos) return state.vehiculos;
   if (state.vehiculosPromise) return state.vehiculosPromise;
   const url = CONFIG.vehiculosUrl + (state.meta?.buildId ? `?v=${state.meta.buildId}` : "");
-  state.vehiculosPromise = fetch(url, { cache: "no-cache" })
+  state.vehiculosPromise = fetch(url)
     .then(r => r.ok ? r.json() : {})
     .then(obj => { state.vehiculos = obj; return obj; })
     .catch(() => { state.vehiculos = {}; return {}; });

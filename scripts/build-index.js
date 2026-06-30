@@ -331,6 +331,30 @@ const indexPayload = {
 const idxSize = writeJSON(path.join(OUT_IDX, "all.json"), indexPayload);
 console.log(`  data/index/all.json: ${(idxSize/1024/1024).toFixed(2)} MB (~${(idxSize/1024/1024/8).toFixed(2)} MB gzip estimado)`);
 
+// 2b) Primer lote: mismo formato que all.json pero solo las piezas más
+//     recientes (idéntico criterio al sort "newest" del front: con foto
+//     primero, luego fecha de actualización desc). Pesa pocos KB, así que
+//     el front lo pinta al instante en vez de esperar al índice completo
+//     (~28 MB / ~3 MB gz), que sigue cargando en segundo plano y sustituye
+//     este lote sin que el usuario lo note.
+console.log("\nGenerando primer lote (pintura instantánea)…");
+const FIRST_N = 600;
+const firstRows = [...indexCompact]
+  .sort((a, b) => {
+    const imgDiff = (b[7] || 0) - (a[7] || 0); // h = tiene foto
+    if (imgDiff !== 0) return imgDiff;
+    return (b[10] || 0) - (a[10] || 0);        // u = fecha actualización
+  })
+  .slice(0, FIRST_N);
+const firstPayload = {
+  cols: indexPayload.cols,
+  families: familyList,
+  brands: brandList,
+  rows: firstRows,
+};
+const firstSize = writeJSON(path.join(OUT_IDX, "first.json"), firstPayload);
+console.log(`  data/index/first.json: ${firstRows.length} piezas · ${(firstSize/1024).toFixed(1)} KB`);
+
 // 3) Vehículos de origen (solo los referenciados por alguna pieza en stock)
 console.log("\nGenerando vehículos de origen…");
 const vehiclesOut = {};
