@@ -50,6 +50,37 @@ function escapeHtml(s) {
 }
 const IVA = 0.21; // IVA estándar 21 %
 
+/* ============ Thumbs R2 (2026-07-22) ============
+   Índice { refid: "socio/hash" } generado a diario en el VPS y servido
+   por la CDN de Cloudflare. Las tarjetas del grid usan el thumb WebP de
+   ~12 KB de R2; si una ref no está en el índice (o falla), se cae a la
+   foto original de Metasync. La ficha (modal) sigue usando Metasync. */
+const THUMBS_URL  = "https://fotos.reddesguaces.com/indices/thumbs.json";
+const THUMBS_BASE = "https://fotos.reddesguaces.com/piezas/";
+let THUMBS = null;
+
+fetch(THUMBS_URL)
+  .then(r => (r.ok ? r.json() : null))
+  .then(idx => {
+    if (!idx) return;
+    THUMBS = idx;
+    // Mejora tardía: si el índice llega después del primer render,
+    // cambia a R2 las tarjetas que aún no han terminado de cargar.
+    document.querySelectorAll("img[data-ref]").forEach(img => {
+      if (img.complete && img.naturalWidth > 0) return;
+      const t = thumbR2(img.dataset.ref);
+      if (t && img.src !== t) img.src = t;
+    });
+  })
+  .catch(() => {});
+
+function thumbR2(ref) {
+  if (!THUMBS) return null;
+  const ruta = THUMBS[String(ref)];
+  return ruta ? `${THUMBS_BASE}${ruta}_thumb.webp` : null;
+}
+
+
 function formatPrice(n) {
   if (!n || n <= 0) return "Consultar";
   return new Intl.NumberFormat("es-ES", {
@@ -318,7 +349,7 @@ function renderNextPage() {
       ? (row[COL.im0]
           // La fila ya trae la URL de la foto (primer lote): se pinta directa,
           // sin esperar al fetch del JSON de familia.
-          ? `<img loading="lazy" src="${escapeHtml(row[COL.im0])}" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.opacity=.15">`
+          ? `<img loading="lazy" src="${escapeHtml(thumbR2(id) || row[COL.im0])}" data-ref="${escapeHtml(id)}" data-orig="${escapeHtml(row[COL.im0])}" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block" onerror="if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig}else{this.style.opacity=.15}">`
           : `<img loading="lazy" data-needs-img="1" alt="${escapeHtml(title)}" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s">`)
       : `<div class="card-placeholder"><img src="assets/logo.png" alt="${escapeHtml(title)}" loading="lazy"><span>Sin foto disponible</span></div>`;
     card.innerHTML = `
@@ -392,7 +423,12 @@ async function hydrateImages(start, end) {
       for (const { id, img } of list) {
         const p = byId.get(id);
         if (p && p.im && p.im[0]) {
-          img.src = p.im[0];
+          const tR2 = thumbR2(id);
+          img.src = tR2 || p.im[0];
+          if (tR2) {
+            img.dataset.orig = p.im[0];
+            img.addEventListener("error", () => { img.src = img.dataset.orig; }, { once: true });
+          }
           img.removeAttribute("data-needs-img");
           img.style.opacity = "1";
           img.addEventListener("error", () => { img.style.opacity = ".15"; }, { once: true });
