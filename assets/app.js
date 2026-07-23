@@ -11,7 +11,7 @@ const CONFIG = {
   vehiculosUrl:  "data/vehiculos.json",
   familyUrl:     fam => `data/familias/${slug(fam)}.json`,
 
-  pageSize: 60,        // piezas por "página" en el grid
+  pageSize: 15,        // piezas por "página" en el grid
   searchDebounce: 200, // ms
 };
 
