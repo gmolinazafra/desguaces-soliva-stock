@@ -1,9 +1,9 @@
-/* ================== Desguaces Soliva escaparate · app.js ================== */
+/* ================== ReciclaCAT escaparate · app.js ================== */
 /* Catálogo de recambios. Diseñado para 170k+ piezas sin backend.        */
 
 const CONFIG = {
   // Número de WhatsApp en formato internacional sin '+', espacios ni guiones
-  whatsappNumber: "34649903695",
+  whatsappNumber: "34640740360",
 
   metaUrl:       "data/meta.json",
   firstUrl:      "data/index/first.json",
@@ -557,7 +557,7 @@ async function openProduct(idx) {
     if (pieza.cv) vehLineas += `\n• Cód. vehículo: ${pieza.cv}`;
   }
 
-  const msg = `Hola, escribo desde la web de Desguaces Soliva (desguacessoliva.com).
+  const msg = `Hola, escribo desde la web de ReciclaCAT (recambios.reciclacat.es).
 Me interesa esta pieza del catálogo:
 
 • ${pieza.art}
@@ -715,7 +715,7 @@ document.getElementById("reset-filters").addEventListener("click", () => {
 document.getElementById("load-more").addEventListener("click", renderNextPage);
 
 // WhatsApp links: cabecera + footer
-const waMessage = "Hola, escribo desde la web de Desguaces Soliva (desguacessoliva.com). Tengo una consulta sobre el catálogo de recambios:";
+const waMessage = "Hola, escribo desde la web de ReciclaCAT (recambios.reciclacat.es). Tengo una consulta sobre el catálogo de recambios:";
 const waUrl = whatsappUrl(waMessage);
 const $waHeader = document.getElementById("wa-direct");
 const $waFooter = document.getElementById("wa-direct-footer");
