@@ -24,6 +24,15 @@
 .cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;display:none;align-items:center;justify-content:space-between;gap:1rem;max-width:960px;margin:auto;padding:1rem 1.1rem;border-radius:12px;background:#111827;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.cookie-banner.is-visible{display:flex}.cookie-banner p{margin:0}.cookie-banner a{color:#bfdbfe;text-decoration:underline}.cookie-banner button{border:0;border-radius:999px;background:#fff;color:#111827;font-weight:700;padding:.65rem 1rem;cursor:pointer;white-space:nowrap}@media(max-width:640px){.cookie-banner{flex-direction:column;align-items:flex-start}.cookie-banner button{width:100%}}
 </style>
 <style>.limonada-link{color:inherit;text-decoration:none;font-weight:700}.limonada-link:hover{text-decoration:underline;text-underline-offset:3px}</style>
+
+<style>
+.info-section{max-width:1200px;margin:0 auto;padding:3rem 1.5rem 2rem}
+.info-section h2{font-size:1.4rem;font-weight:800;color:#1a1a1a;margin-bottom:1.5rem;text-align:center}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
+.info-card{background:#f8faf8;border:1px solid #d1fae5;border-radius:10px;padding:1.1rem 1.25rem}
+.info-card strong{display:block;font-size:.95rem;font-weight:700;color:#1B4332;margin-bottom:.5rem}
+.info-card p{font-size:.85rem;color:#374151;line-height:1.6;margin:0}
+</style>
 </head>
 <body>
 
@@ -136,6 +145,37 @@
 <!-- Estado / loading -->
 <p class="status" id="status">Cargando catálogo…</p>
 
+
+<!-- Todo lo que necesitas saber -->
+<section class="info-section">
+  <h2>Todo lo que necesitas saber</h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <strong>🏭 Centro CAT autorizado</strong>
+      <p>Todos los vehículos están descontaminados y tratados conforme al Real Decreto 265/2021. Cada pieza tiene trazabilidad completa: vehículo de origen, bastidor y fecha de extracción.</p>
+    </div>
+    <div class="info-card">
+      <strong>🛡️ Garantía legal incluida</strong>
+      <p>Las piezas de segunda mano incluyen 1 año de garantía para particulares y 6 meses para profesionales. El desguace responde directamente ante cualquier defecto de la pieza.</p>
+    </div>
+    <div class="info-card">
+      <strong>💰 Hasta un 80% de ahorro</strong>
+      <p>Motores, cajas de cambios, faros, centralitas y carrocería cuestan entre un 50% y un 80% menos que la pieza nueva de concesionario. Sin perder calidad ni garantía.</p>
+    </div>
+    <div class="info-card">
+      <strong>🔍 Confirma compatibilidad por WhatsApp</strong>
+      <p>Si tienes el número de bastidor (VIN) o una foto de tu pieza original, el desguace confirma la compatibilidad exacta antes de que te desplaces o hagas ningún pedido.</p>
+    </div>
+    <div class="info-card">
+      <strong>✅ 100% legal y regulado</strong>
+      <p>La reutilización de piezas cumple la normativa europea de economía circular. Los CAT emiten documentación de trazabilidad por ley, con NIMA registrado ante el Ministerio.</p>
+    </div>
+    <div class="info-card">
+      <strong>♻️ Impacto medioambiental real</strong>
+      <p>Reutilizar recambios reduce las emisiones de CO₂ entre un 70% y un 80% frente a fabricar piezas nuevas, y evita que componentes funcionales acaben en vertedero.</p>
+    </div>
+  </div>
+</section>
 <!-- Pie -->
 <footer class="site-footer" id="contacto">
   <div class="footer-grid">
