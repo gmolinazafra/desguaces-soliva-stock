@@ -16,7 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  actions: write   # necesario para el keepalive (reactivar el workflow por API)
+  actions: write
 
 concurrency:
   group: pages
@@ -40,16 +40,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Download CSVs from FTP (stock + vehiculos)
+      - name: Download stock from Metasync API
         env:
-          FTP_HOST:            ${{ secrets.FTP_HOST }}
-          FTP_PORT:            ${{ secrets.FTP_PORT }}
-          FTP_USER:            ${{ secrets.FTP_USER }}
-          FTP_PASSWORD:        ${{ secrets.FTP_PASSWORD }}
-          FTP_REMOTE_PATH:     ${{ secrets.FTP_REMOTE_PATH }}
-          FTP_REMOTE_PATH_VEH: ${{ secrets.FTP_REMOTE_PATH_VEH }}
-          FTP_SECURE:          ${{ secrets.FTP_SECURE }}
-        run: node scripts/sync-stock.js
+          METASYNC_APIKEY:    ${{ secrets.METASYNC_APIKEY }}
+          METASYNC_IDEMPRESA: ${{ secrets.METASYNC_IDEMPRESA }}
+        run: node scripts/sync-metasync.js
 
       - name: Build index + family JSONs + vehiculos.json
         run: node scripts/build-index.js
@@ -59,10 +54,6 @@ jobs:
           rm -rf node_modules
           rm -f data/stock.csv
           rm -f data/vehiculos.csv
-          # Cache-busting de assets/app.js: añadimos el SHA corto del commit como
-          # query string en cada deploy, para que el navegador/CDN nunca sirvan
-          # una copia vieja del script tras un cambio de código (el campo solo
-          # cambia cuando cambia el commit desplegado, no en cada cron sin código nuevo).
           sed -i "s#assets/app\\.js\"#assets/app.js?v=${GITHUB_SHA::7}\"#" index.html
 
       - name: Setup Pages
@@ -77,7 +68,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Keepalive (evita desactivación por 60 días de inactividad)
+      - name: Keepalive
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
