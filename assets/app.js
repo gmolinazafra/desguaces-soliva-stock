@@ -193,11 +193,17 @@ async function loadAll() {
     state.index = first;
     state.indexFull = false;
 
-    // Hero (formato número con separadores en español)
-    document.getElementById("hero-count").textContent =
-      new Intl.NumberFormat("es-ES").format(meta.total);
-    document.getElementById("hero-brands").textContent = meta.brands.length;
-    document.getElementById("hero-updated").textContent = formatDate(meta.updated);
+    // Contadores con las cifras REALES del catálogo (formato español)
+    const fmt = n => new Intl.NumberFormat("es-ES").format(n);
+    const totalModelos = Object.values(meta.modelsByBrand || {})
+      .reduce((suma, lista) => suma + (Array.isArray(lista) ? lista.length : 0), 0);
+    const poner = (id, valor) => { const n = document.getElementById(id); if (n) n.textContent = valor; };
+    poner("hero-count", fmt(meta.total));
+    poner("hero-brands", fmt(meta.brands.length));
+    poner("hero-updated", formatDate(meta.updated));
+    poner("hero-card-count", fmt(meta.total));
+    poner("hero-models", fmt(totalModelos));
+    poner("hero-card-models", fmt(totalModelos));
 
     // Selectores
     populateFamilies(meta);
