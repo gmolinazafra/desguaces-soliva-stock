@@ -10,6 +10,20 @@
 //   METASYNC_FECHA_INICIO (opcional) → fecha de corte inicial
 //                          Por defecto: 2020-01-01 00:00:00
 //                          Usar 2000-01-01 en el primer sync completo
+//   STOCK_MIN_RATIO (opcional) → proporción mínima respecto al stock
+//                          anterior para aceptar una descarga (0.5 = 50 %)
+//
+// 2026-09-30 — PROTECCIÓN CONTRA CATÁLOGO VACÍO
+// La API es diferencial (RecuperarCambiosCanalEmpresa) y puede devolver
+// cero cambios o una lista parcial (límite de peticiones, canal sin
+// novedades, corte a mitad de descarga). Antes eso se publicaba tal
+// cual y la web quedaba con 0 piezas. Ahora:
+//  · Si la 1ª página llega vacía o la API da 429/5xx, se reintenta.
+//  · Si la descarga trae 0 piezas o muchas menos que la copia anterior
+//    (data/stock.csv restaurado de la caché del workflow), se CONSERVA
+//    la copia anterior y no se pisa.
+//  · El resultado se comunica al workflow (salida "fuente": api | copia
+//    | vacio) y se escribe en el resumen de la ejecución.
 // ============================================================
 
 const fs   = require('fs');
@@ -23,6 +37,9 @@ const MAX_PAGES = 600;
 const APIKEY    = process.env.METASYNC_APIKEY;
 const IDEMPRESA = process.env.METASYNC_IDEMPRESA;
 const FECHA     = process.env.METASYNC_FECHA_INICIO || '2020-01-01 00:00:00';
+const MIN_RATIO = parseFloat(process.env.STOCK_MIN_RATIO || '0.5');
+const REINTENTOS = 4;          // por petición (429/5xx/red) y para 1ª página vacía
+const ESPERA_MS  = 20000;      // espera base entre reintentos
 
 if (!APIKEY || !IDEMPRESA) {
   console.error('Faltan variables: METASYNC_APIKEY / METASYNC_IDEMPRESA');
@@ -65,6 +82,35 @@ function fila(...cols) {
   return cols.map(escapeCsv).join(';');
 }
 
+const dormir = ms => new Promise(r => setTimeout(r, ms));
+
+// Petición de una página con reintentos ante 429, 5xx o fallo de red.
+async function pedirPagina(lastId) {
+  let ultimoError = '';
+  for (let intento = 1; intento <= REINTENTOS; intento++) {
+    try {
+      const res = await fetch(`${API_BASE}/Almacen/RecuperarCambiosCanalEmpresa`, {
+        headers: {
+          apikey:    APIKEY,
+          fecha:     FECHA,
+          lastid:    String(lastId),
+          offset:    String(OFFSET),
+          idempresa: IDEMPRESA,
+        },
+      });
+      if (res.ok) return await res.json();
+      ultimoError = `HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`;
+      // 4xx distinto de 429 = error de credenciales o de petición: no tiene sentido reintentar
+      if (res.status < 500 && res.status !== 429) break;
+    } catch (e) {
+      ultimoError = `red: ${e.message}`;
+    }
+    console.warn(`  Intento ${intento}/${REINTENTOS} fallido (${ultimoError}). Esperando…`);
+    if (intento < REINTENTOS) await dormir(ESPERA_MS * intento);
+  }
+  throw new Error(`API Metasync no disponible (${ultimoError})`);
+}
+
 // ── llamada paginada a la API ────────────────────────────────
 async function descargarInventario() {
   let lastId = 0;
@@ -75,23 +121,20 @@ async function descargarInventario() {
   console.log(`Descargando inventario Metasync (idEmpresa ${IDEMPRESA}, desde ${FECHA})…`);
 
   while (pagina <= MAX_PAGES) {
-    const res = await fetch(`${API_BASE}/Almacen/RecuperarCambiosCanalEmpresa`, {
-      headers: {
-        apikey:    APIKEY,
-        fecha:     FECHA,
-        lastid:    String(lastId),
-        offset:    String(OFFSET),
-        idempresa: IDEMPRESA,
-      },
-    });
+    let json  = await pedirPagina(lastId);
+    let items = json?.listaCambios ?? json?.ListaCambios ?? [];
 
-    if (!res.ok) {
-      console.error(`  API error ${res.status}: ${await res.text()}`);
-      process.exit(1);
+    // 1ª página vacía: puede ser un límite temporal de la API. Se reintenta
+    // antes de dar por bueno que "no hay nada que traer".
+    if (pagina === 1 && (!Array.isArray(items) || items.length === 0)) {
+      console.warn(`  La API devuelve 0 cambios en la 1ª página. Respuesta: ${JSON.stringify(json).slice(0, 300)}`);
+      for (let intento = 1; intento < REINTENTOS && (!Array.isArray(items) || items.length === 0); intento++) {
+        console.warn(`  Reintento ${intento}/${REINTENTOS - 1} de la 1ª página en ${ESPERA_MS * intento / 1000} s…`);
+        await dormir(ESPERA_MS * intento);
+        json  = await pedirPagina(lastId);
+        items = json?.listaCambios ?? json?.ListaCambios ?? [];
+      }
     }
-
-    const json = await res.json();
-    const items = json?.listaCambios ?? json?.ListaCambios ?? [];
     if (!Array.isArray(items) || items.length === 0) break;
 
     for (const item of items) {
@@ -201,26 +244,74 @@ function generarVehiculosCsv(vehiculos) {
   return lineas.join('\n');
 }
 
+// ── comunicación con el workflow ──────────────────────────────
+function contarLineas(ruta) {
+  try {
+    const t = fs.readFileSync(ruta, 'utf8');
+    return Math.max(0, t.split('\n').filter(l => l.trim() !== '').length - 1);
+  } catch { return 0; }
+}
+function salida(clave, valor) {
+  if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `${clave}=${valor}\n`);
+}
+function resumen(texto) {
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, texto + '\n');
+}
+
 // ── main ──────────────────────────────────────────────────────
 async function main() {
-  const { piezas, vehiculos } = await descargarInventario();
-
-  const mapaVehiculos = new Map(vehiculos.map(v => [String(v.idLocal ?? '').trim(), v]));
-
-  const stockCsv = generarStockCsv(piezas, mapaVehiculos);
-  const vehCsv   = generarVehiculosCsv(vehiculos);
-
   const stockPath = path.join(DATA_DIR, 'stock.csv');
   const vehPath   = path.join(DATA_DIR, 'vehiculos.csv');
+
+  // Copia anterior (restaurada de la caché por el workflow), si existe
+  const previas = contarLineas(stockPath);
+  console.log(previas > 0
+    ? `Copia anterior disponible: ${previas} piezas`
+    : 'Sin copia anterior del stock');
+
+  let piezas = [], vehiculos = [], errorApi = '';
+  try {
+    ({ piezas, vehiculos } = await descargarInventario());
+  } catch (e) {
+    errorApi = e.message;
+    console.error(`[API] ${errorApi}`);
+  }
+
+  const mapaVehiculos = new Map(vehiculos.map(v => [String(v.idLocal ?? '').trim(), v]));
+  const stockCsv = generarStockCsv(piezas, mapaVehiculos);
+  const vehCsv   = generarVehiculosCsv(vehiculos);
+  const nuevas   = stockCsv.split('\n').length - 1;
+
+  const insuficiente = nuevas === 0 || (previas > 0 && nuevas < previas * MIN_RATIO);
+
+  if (insuficiente && previas > 0) {
+    // No se pisa el stock bueno con una descarga vacía o parcial
+    const motivo = errorApi || `la API devolvió ${nuevas} piezas a la venta (${piezas.length} registros) frente a ${previas} de la copia anterior`;
+    console.log(`::warning title=Stock Metasync no actualizado::Se conserva la copia anterior (${previas} piezas): ${motivo}`);
+    resumen(`### ⚠️ Stock NO actualizado\nSe publica la copia anterior (**${previas}** piezas). Motivo: ${motivo}`);
+    salida('fuente', 'copia');
+    salida('piezas', previas);
+    return;
+  }
 
   fs.writeFileSync(stockPath, stockCsv, 'utf8');
   fs.writeFileSync(vehPath, vehCsv, 'utf8');
 
-  const piezasValidas = stockCsv.split('\n').length - 1;
-  const vehValidos    = vehCsv.split('\n').length - 1;
+  if (nuevas === 0) {
+    const motivo = errorApi || `la API devolvió ${piezas.length} registros y ninguna pieza a la venta`;
+    console.log(`::error title=Catálogo vacío::No hay copia anterior y ${motivo}. La web se publica SIN piezas.`);
+    resumen(`### ❌ Catálogo vacío\nNo hay copia anterior y ${motivo}.`);
+    salida('fuente', 'vacio');
+    salida('piezas', 0);
+    return;
+  }
 
-  console.log(`stock.csv: ${piezasValidas} piezas (${(fs.statSync(stockPath).size / 1024).toFixed(0)} KB)`);
+  const vehValidos = vehCsv.split('\n').length - 1;
+  console.log(`stock.csv: ${nuevas} piezas (${(fs.statSync(stockPath).size / 1024).toFixed(0)} KB)`);
   console.log(`vehiculos.csv: ${vehValidos} vehículos`);
+  resumen(`### ✅ Stock actualizado desde Metasync\n**${nuevas}** piezas · **${vehValidos}** vehículos`);
+  salida('fuente', 'api');
+  salida('piezas', nuevas);
 }
 
 main().catch(e => { console.error('[FATAL]', e); process.exit(1); });

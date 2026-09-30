@@ -40,11 +40,40 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Última copia buena del stock (CSV). Sirve para dos cosas:
+      #  · Los push de código (index.html, assets…) publican con esta copia
+      #    y NO vuelven a descargar todo el inventario de Metasync.
+      #  · Si la API devuelve vacío o una descarga parcial, el script
+      #    conserva esta copia en vez de publicar un catálogo sin piezas.
+      - name: Restore last good stock
+        id: stock
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/stock.csv
+            data/vehiculos.csv
+          key: stock-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            stock-
+
+      # Se descarga de Metasync en el cron diario y en el lanzamiento manual.
+      # En un push solo se descarga si todavía no hay copia guardada.
       - name: Download stock from Metasync API
+        id: sync
+        if: github.event_name != 'push' || steps.stock.outputs.cache-matched-key == ''
         env:
           METASYNC_APIKEY:    ${{ secrets.METASYNC_APIKEY }}
           METASYNC_IDEMPRESA: ${{ secrets.METASYNC_IDEMPRESA }}
         run: node scripts/sync-metasync.js
+
+      - name: Save stock as last good copy
+        if: steps.sync.outputs.fuente == 'api'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/stock.csv
+            data/vehiculos.csv
+          key: stock-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Build index + family JSONs + vehiculos.json
         run: node scripts/build-index.js
