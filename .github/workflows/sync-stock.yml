@@ -16,7 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  actions: write
+  actions: write   # necesario para el keepalive (reactivar el workflow por API)
 
 concurrency:
   group: pages
@@ -40,50 +40,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Última copia buena del stock (CSV). Sirve para dos cosas:
-      #  · Los push de código (index.html, assets…) publican con esta copia
-      #    y NO vuelven a descargar todo el inventario de Metasync.
-      #  · Si la API devuelve vacío o una descarga parcial, el script
-      #    conserva esta copia en vez de publicar un catálogo sin piezas.
-      - name: Restore last good stock
-        id: stock
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            data/stock.csv
-            data/vehiculos.csv
-          key: stock-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            stock-
-
-      # Se descarga de Metasync en el cron diario y en el lanzamiento manual.
-      # En un push solo se descarga si todavía no hay copia guardada.
-      - name: Download stock from Metasync API
-        id: sync
-        if: github.event_name != 'push' || steps.stock.outputs.cache-matched-key == ''
+      # Mismo origen que ReciclaCAT: CSV de CRVNET por FTP (mismo inventario).
+      - name: Download CSVs from FTP (stock + vehiculos)
+        id: ftp
+        continue-on-error: true
         env:
-          METASYNC_APIKEY:    ${{ secrets.METASYNC_APIKEY }}
-          METASYNC_IDEMPRESA: ${{ secrets.METASYNC_IDEMPRESA }}
-        run: node scripts/sync-metasync.js
-
-      - name: Save stock as last good copy
-        if: steps.sync.outputs.fuente == 'api'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            data/stock.csv
-            data/vehiculos.csv
-          key: stock-${{ github.run_id }}-${{ github.run_attempt }}
+          FTP_HOST:            ${{ secrets.FTP_HOST }}
+          FTP_PORT:            ${{ secrets.FTP_PORT }}
+          FTP_USER:            ${{ secrets.FTP_USER }}
+          FTP_PASSWORD:        ${{ secrets.FTP_PASSWORD }}
+          FTP_REMOTE_PATH:     ${{ secrets.FTP_REMOTE_PATH }}
+          FTP_REMOTE_PATH_VEH: ${{ secrets.FTP_REMOTE_PATH_VEH }}
+          FTP_SECURE:          ${{ secrets.FTP_SECURE }}
+        run: node scripts/sync-stock.js
 
       - name: Build index + family JSONs + vehiculos.json
-        if: steps.sync.outputs.fuente != 'vacio'
+        if: steps.ftp.outcome == 'success'
         run: node scripts/build-index.js
 
-      # Respaldo: Metasync no ha devuelto piezas y no hay copia anterior.
-      # Se copian los datos ya publicados por ReciclaCAT (mismo inventario
-      # y mismo formato) para no publicar la web vacía.
+      # Respaldo: si el FTP falla, se copia el catálogo ya publicado por
+      # ReciclaCAT (mismo inventario y mismo formato) para no publicar vacío.
       - name: Fallback - copy published catalog from ReciclaCAT
-        if: steps.sync.outputs.fuente == 'vacio'
+        if: steps.ftp.outcome != 'success'
         run: node scripts/mirror-reciclacat.js
 
       - name: Prepare site for Pages
@@ -91,6 +69,10 @@ jobs:
           rm -rf node_modules
           rm -f data/stock.csv
           rm -f data/vehiculos.csv
+          # Cache-busting de assets/app.js: añadimos el SHA corto del commit como
+          # query string en cada deploy, para que el navegador/CDN nunca sirvan
+          # una copia vieja del script tras un cambio de código (el campo solo
+          # cambia cuando cambia el commit desplegado, no en cada cron sin código nuevo).
           sed -i "s#assets/app\\.js\"#assets/app.js?v=${GITHUB_SHA::7}\"#" index.html
 
       - name: Setup Pages
@@ -105,7 +87,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Keepalive
+      - name: Keepalive (evita desactivación por 60 días de inactividad)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
