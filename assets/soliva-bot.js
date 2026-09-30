@@ -274,7 +274,7 @@
   var CSS =
     ".svb-fab{position:fixed;right:1rem;bottom:1rem;z-index:950;width:84px;height:96px;border:0;background:transparent;padding:0;cursor:pointer;filter:drop-shadow(0 10px 18px rgba(14,30,63,.28))}" +
     ".svb-fab img{width:100%;height:100%;object-fit:contain;display:block}" +
-    ".svb{position:fixed;right:1rem;bottom:7.5rem;z-index:951;width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100vh - 9rem));display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(14,30,63,.32);overflow:hidden;font:400 .92rem/1.45 var(--sv-body,Inter,system-ui,sans-serif);color:var(--sv-ink,#1B2333)}" +
+    ".svb{position:fixed;right:1rem;bottom:7.5rem;z-index:951;width:min(380px,calc(100vw - 2rem));height:min(560px,calc(100vh - 9rem));height:min(560px,calc(100dvh - 9rem));display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(14,30,63,.32);overflow:hidden;font:400 .92rem/1.45 var(--sv-body,Inter,system-ui,sans-serif);color:var(--sv-ink,#1B2333)}" +
     ".svb[hidden]{display:none}" +
     ".svb-head{flex:none;background:var(--sv-navy,#0E1E3F);color:#fff;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem}" +
     ".svb-head img{width:40px;height:46px;object-fit:contain}" +
@@ -307,7 +307,8 @@
     ".svb-form input{flex:1;min-width:0;border:1.5px solid var(--sv-line,#E1E6EE);border-radius:999px;padding:.65rem .9rem;font:500 .92rem var(--sv-body,inherit);color:inherit}" +
     ".svb-form input:focus{outline:0;border-color:var(--sv-orange,#F26A1B)}" +
     ".svb button:focus-visible,.svb a:focus-visible,.svb-fab:focus-visible{outline:3px solid var(--sv-orange,#F26A1B);outline-offset:2px}" +
-    "@media (max-width:640px){.svb-fab{width:68px;height:78px}.svb{right:.5rem;left:.5rem;width:auto;bottom:6rem;height:min(560px,calc(100vh - 7rem))}}" +
+    "@media (max-width:640px){.svb-fab{width:60px;height:70px;right:.5rem;bottom:.5rem}.svb-fab.abierto{display:none}" +
+    ".svb{z-index:1000;top:.5rem;right:.5rem;bottom:.5rem;left:.5rem;width:auto;height:auto;max-height:none}.svb-form input{font-size:16px}}" +
     "@media (prefers-reduced-motion:reduce){.svb-dots span{animation:none}}";
 
   var el = {}, ctx = null, saludado = false, ocupado = false;
@@ -364,6 +365,7 @@
   function abrir(si) {
     el.panel.hidden = !si;
     el.fab.setAttribute("aria-expanded", si ? "true" : "false");
+    el.fab.classList.toggle("abierto", !!si);
     if (si) {
       if (!saludado) { saludado = true; decir(BIENVENIDA); }
       el.input.focus();
