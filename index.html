@@ -74,25 +74,26 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 .sv-hero{position:relative;background:#fff url("assets/hero-soliva.webp") right center/cover no-repeat;overflow:hidden}
 .sv-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.94) 0,rgba(255,255,255,.78) 36%,rgba(255,255,255,0) 60%);pointer-events:none}
 .sv-hero-photo{display:none}
-.sv-hero .sv-wrap{position:relative;padding-top:4.5rem;padding-bottom:4.5rem;min-height:600px;display:flex;flex-direction:column;justify-content:center}
-.sv-hero-copy{max-width:700px}
-.sv-hero h1{font-family:var(--sv-display);font-weight:900;font-size:clamp(2.3rem,5.4vw,4.4rem);line-height:1.02;letter-spacing:-.025em;color:var(--sv-navy);margin:0 0 1.4rem}
+.sv-hero .sv-wrap{position:relative;padding-top:clamp(1.5rem,4.5vh,4rem);padding-bottom:clamp(1.5rem,4.5vh,4rem);min-height:min(600px,calc(100vh - 112px));display:flex;flex-direction:column;justify-content:center}
+.sv-hero-copy{max-width:740px}
+.sv-hero h1{font-family:var(--sv-display);font-weight:900;font-size:clamp(2.1rem,min(5vw,8.2vh),4.2rem);line-height:1.02;letter-spacing:-.025em;color:var(--sv-navy);margin:0 0 clamp(.9rem,2.4vh,1.4rem)}
+.sv-hero h1 .sv-l{display:block}
 .sv-hero h1 em{font-style:normal;color:var(--sv-orange);position:relative;display:inline-block}
 .sv-hero h1 em svg{position:absolute;left:0;bottom:-.2em;width:100%;height:.22em;overflow:visible}
-.sv-hero-sub{font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.55;color:#3D475B;margin:0 0 1.75rem;max-width:34em}
-.sv-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;list-style:none;margin:0 0 1.25rem;padding:0;max-width:680px}
-.sv-card{background:rgba(255,255,255,.94);border-radius:16px;padding:1rem 1rem 1.05rem;box-shadow:0 10px 30px rgba(14,30,63,.10);color:var(--sv-muted);font-size:.86rem;line-height:1.3}
-.sv-card svg{display:block;width:30px;height:30px;color:var(--sv-orange);margin-bottom:.45rem}
-.sv-card b{display:block;font-family:var(--sv-display);font-weight:900;font-size:1.45rem;line-height:1.1;color:var(--sv-navy);letter-spacing:-.01em}
+.sv-hero-sub{font-size:clamp(1rem,min(1.4vw,2.7vh),1.15rem);line-height:1.5;color:#3D475B;margin:0 0 clamp(1rem,2.6vh,1.6rem);max-width:40em}
+.sv-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;list-style:none;margin:0 0 clamp(.85rem,2.2vh,1.25rem);padding:0;max-width:680px}
+.sv-card{background:rgba(255,255,255,.94);border-radius:16px;padding:.8rem .95rem .85rem;box-shadow:0 10px 30px rgba(14,30,63,.10);color:var(--sv-muted);font-size:.86rem;line-height:1.3}
+.sv-card svg{display:block;width:26px;height:26px;color:var(--sv-orange);margin-bottom:.35rem}
+.sv-card b{display:block;font-family:var(--sv-display);font-weight:900;font-size:1.35rem;line-height:1.1;color:var(--sv-navy);letter-spacing:-.01em}
 .sv-card b.sv-sm{font-size:1.2rem}
 .sv-search{display:flex;align-items:center;gap:.5rem;background:#fff;border-radius:999px;padding:.4rem .4rem .4rem 1.2rem;box-shadow:0 12px 34px rgba(14,30,63,.16),inset 0 0 0 1.5px var(--sv-line);max-width:680px;box-sizing:border-box}
 .sv-search:focus-within{box-shadow:0 12px 34px rgba(14,30,63,.16),inset 0 0 0 2px var(--sv-orange)}
 .sv-search > svg{flex:none;color:var(--sv-muted)}
-.sv-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 1rem var(--sv-body);color:var(--sv-ink);padding:.7rem .25rem;-webkit-appearance:none;appearance:none}
+.sv-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 1rem var(--sv-body);color:var(--sv-ink);padding:.6rem .25rem;-webkit-appearance:none;appearance:none}
 .sv-search input::-webkit-search-cancel-button{display:none}
 .sv-search-clear{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--sv-mist);color:var(--sv-muted);font-size:1.2rem;line-height:1;cursor:pointer}
 .sv-search-clear[hidden]{display:none}
-.sv-search .sv-btn{padding:.85rem 1.4rem;font-size:1rem}
+.sv-search .sv-btn{padding:.8rem 1.4rem;font-size:1rem}
 
 /* Cinta de familias */
 .sv-marquee{background:var(--sv-navy);color:#fff;overflow:hidden;font:800 .95rem var(--sv-display);letter-spacing:.08em}
@@ -183,13 +184,19 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
   .sv-actions{margin-left:auto}
   .sv-about .sv-wrap{grid-template-columns:1fr;gap:2rem}
 }
+@media (min-width:861px){.sv-hero h1 .sv-l2{white-space:nowrap}}
 @media (max-width:860px){
+  .sv-hero h1 .sv-l{display:inline}
+  .sv-hero h1{font-size:clamp(2.1rem,9vw,3rem)}
   .sv-topbar-text{display:none}
   .sv-topbar .sv-wrap{justify-content:center}
   .sv-hero{background:#fff}
   .sv-hero::before{display:none}
-  .sv-hero-photo{display:block;height:210px;background:url("assets/hero-soliva-movil.webp") 70% center/cover no-repeat}
-  .sv-hero .sv-wrap{min-height:0;padding-top:1.75rem;padding-bottom:2.25rem}
+  .sv-hero-copy{display:flex;flex-direction:column}
+  .sv-search{order:1;margin-bottom:1.1rem}
+  .sv-cards{order:2;margin-bottom:0}
+  .sv-hero-photo{display:block;height:min(210px,22vh);background:url("assets/hero-soliva-movil.webp") 70% center/cover no-repeat}
+  .sv-hero .sv-wrap{min-height:0;padding-top:1.4rem;padding-bottom:2.25rem}
   .sv-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sv-card{box-shadow:0 6px 18px rgba(14,30,63,.10);border:1px solid var(--sv-line)}
   .sv-trust ul{grid-template-columns:repeat(2,1fr)}
@@ -250,7 +257,7 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
   <div class="sv-hero-photo" aria-hidden="true"></div>
   <div class="sv-wrap">
     <div class="sv-hero-copy">
-      <h1>Encuentra el <em>recambio<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M2 15 C 70 4, 190 2, 298 9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></em> que necesitas</h1>
+      <h1><span class="sv-l">Encuentra el</span> <span class="sv-l sv-l2"><em>recambio<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M2 15 C 70 4, 190 2, 298 9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></em> que necesitas</span></h1>
       <p class="sv-hero-sub">Piezas verificadas de coches, motos y furgonetas, con despiece propio y atención por WhatsApp. Recambios de calidad, un futuro más sostenible.</p>
 
       <ul class="sv-cards">
