@@ -131,7 +131,7 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 .sv-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:0}
 .sv-stats div{background:var(--sv-navy-2);border-radius:14px;padding:1.1rem 1.25rem;min-width:0}
 .sv-stats dt{order:2;color:#C7D0E2;font-size:.88rem;margin-top:.2rem}
-.sv-stats dd{margin:0;font-family:var(--sv-display);font-weight:900;font-size:clamp(1.2rem,5vw,1.9rem);line-height:1.1;color:#fff;overflow-wrap:anywhere}
+.sv-stats dd{margin:0;font-family:var(--sv-display);font-weight:900;font-size:clamp(1.3rem,5.5vw,1.9rem);line-height:1.1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sv-stats div{display:flex;flex-direction:column}
 .sv-stats dd{order:1}
 .sv-trust{background:var(--sv-mist);border-bottom:1px solid var(--sv-line)}
@@ -151,6 +151,18 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 .sv-footer .copyleft{max-width:var(--sv-wrap);margin:2.25rem auto 0;padding:1.25rem 1.5rem 0;box-sizing:border-box;border-top:1px solid rgba(255,255,255,.12);font-size:.85rem;color:#9AA6BF}
 .limonada-link{color:inherit;text-decoration:none;font-weight:700}
 .limonada-link:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* WhatsApp en las tarjetas del catálogo */
+.card .card-body{display:flex;flex-direction:column;flex:1}
+.card .card-wa{display:flex;align-items:center;justify-content:center;gap:.45rem;margin-top:.75rem;padding:.6rem .7rem;border-radius:999px;background:#25D366;color:#fff;font:700 .82rem var(--sv-body);text-decoration:none;line-height:1.2;text-align:center}
+.card .card-wa:hover{background:#1ebe5a;color:#fff}
+.card .card-wa:focus-visible{outline:3px solid var(--sv-navy);outline-offset:2px}
+.card .card-wa svg{width:16px;height:16px;flex:none}
+.card .card-foot{margin-top:auto}
+@media (max-width:720px){.card .card-wa{font-size:.8rem;padding:.55rem .5rem;gap:.4rem}.card .card-wa svg{width:15px;height:15px}.card .card-wa .wa-largo{display:none}}
+
+/* Ficha: el botón de WhatsApp queda siempre a la vista, sin hacer scroll */
+.product-modal .cta-wa{position:sticky;bottom:12px;z-index:3;box-shadow:0 8px 24px rgba(14,30,63,.28)}
 
 /* Aviso de cookies */
 .cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;display:none;align-items:center;justify-content:space-between;gap:1rem;max-width:960px;margin:auto;padding:1rem 1.1rem;border-radius:12px;background:#0A1630;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}

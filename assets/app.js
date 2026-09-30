@@ -107,6 +107,20 @@ function debounce(fn, ms) {
 function whatsappUrl(text) {
   return `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(text)}`;
 }
+/* Mensaje de WhatsApp de la tarjeta del catálogo (sin abrir la ficha) */
+function mensajeTarjeta(art, vehTexto, id, precio) {
+  return `Hola, escribo desde la web de Desguaces Soliva (desguacessoliva.com).
+Me interesa esta pieza del catálogo:
+
+• ${art}
+• Vehículo: ${vehTexto || "—"}
+• Referencia: ${id}
+• Precio orientativo: ${precio && precio > 0 ? precioIva(precio).conIva + " (IVA incluido)" : "Consultar"}
+
+¿Podríais confirmarme disponibilidad y estado? Gracias.`;
+}
+const WA_ICON = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2z"/></svg>`;
+
 function vehicleString(ma, mo, y0, y1) {
   const yr = (y0 && y1 && y0 !== y1) ? `${y0}-${y1}` : (y0 || y1 || "");
   return [ma, mo, yr].filter(Boolean).join(" · ");
@@ -194,7 +208,8 @@ function silentRefresh() {
 
 function formatDate(iso) {
   try {
-    return new Date(iso).toLocaleDateString("es-ES", { day: "2-digit", month: "long" });
+    // Formato corto ("30 sept"): el nombre largo del mes no cabe en la tarjeta del contador
+    return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short" }).replace(/\.$/, "");
   } catch { return "hoy"; }
 }
 
@@ -365,6 +380,9 @@ function renderNextPage() {
           ${priceHtml}
           <span class="card-year">${y0 || y1 || ""}</span>
         </div>
+        <a class="card-wa" href="${escapeHtml(whatsappUrl(mensajeTarjeta(row[COL.art] || title, vehicleString(brand, model, y0, y1), id, price)))}" target="_blank" rel="noopener" aria-label="Consultar por WhatsApp: ${escapeHtml(title)}">
+          ${WA_ICON}<span>Consultar<span class="wa-largo"> por WhatsApp</span></span>
+        </a>
       </div>
     `;
     frag.appendChild(card);
@@ -650,6 +668,7 @@ Me interesa esta pieza del catálogo:
 
 /* ---------- eventos ---------- */
 document.getElementById("grid").addEventListener("click", e => {
+  if (e.target.closest(".card-wa")) return; // el botón de WhatsApp no abre la ficha
   const card = e.target.closest(".card");
   if (card) openProduct(parseInt(card.dataset.idx, 10));
 });
