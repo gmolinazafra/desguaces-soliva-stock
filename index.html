@@ -1,99 +1,302 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Desguaces Soliva — Catálogo de recambios de ocasión</title>
-<meta name="description" content="Catálogo de recambios de automoción de ocasión. Más de 180.000 piezas verificadas. Consulta disponibilidad por WhatsApp." />
-<meta name="theme-color" content="#2E9E47" />
+<title>Desguaces Soliva — Recambios de coche, moto y furgoneta</title>
+<meta name="description" content="Recambios de ocasión para coches, motos y furgonetas. Más de 180.000 piezas verificadas en un centro CAT autorizado. Consulta disponibilidad por WhatsApp." />
+<meta name="theme-color" content="#0E1E3F" />
 
-<meta property="og:title" content="Desguaces Soliva — Recambios de ocasión" />
+<meta property="og:title" content="Desguaces Soliva — Recambios de coche, moto y furgoneta" />
 <meta property="og:description" content="Más de 180.000 recambios verificados. Consulta por WhatsApp." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="assets/logo.png" />
+<meta property="og:image" content="assets/hero-soliva.webp" />
 
-<link rel="icon" type="image/png" href="assets/logo.png" />
-<link rel="apple-touch-icon" href="assets/logo.png" />
+<link rel="icon" href="favicon.ico" sizes="48x48" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Red+Hat+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/hero-soliva.webp" media="(min-width: 861px)" />
 
 <link rel="stylesheet" href="assets/styles.css" />
-<style>
-.cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;display:none;align-items:center;justify-content:space-between;gap:1rem;max-width:960px;margin:auto;padding:1rem 1.1rem;border-radius:12px;background:#111827;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.cookie-banner.is-visible{display:flex}.cookie-banner p{margin:0}.cookie-banner a{color:#bfdbfe;text-decoration:underline}.cookie-banner button{border:0;border-radius:999px;background:#fff;color:#111827;font-weight:700;padding:.65rem 1rem;cursor:pointer;white-space:nowrap}@media(max-width:640px){.cookie-banner{flex-direction:column;align-items:flex-start}.cookie-banner button{width:100%}}
-</style>
-<style>.limonada-link{color:inherit;text-decoration:none;font-weight:700}.limonada-link:hover{text-decoration:underline;text-underline-offset:3px}</style>
 
 <style>
-.info-section{max-width:1200px;margin:0 auto;padding:3rem 1.5rem 2rem}
-.info-section h2{font-size:1.4rem;font-weight:800;color:#1a1a1a;margin-bottom:1.5rem;text-align:center}
+/* ===== Desguaces Soliva · portada (estructura Portillo) ===== */
+:root{
+  --sv-navy:#0E1E3F;
+  --sv-navy-2:#16294F;
+  --sv-orange:#F26A1B;
+  --sv-orange-d:#D9570C;
+  --sv-ink:#1B2333;
+  --sv-muted:#5A6478;
+  --sv-mist:#F3F5F9;
+  --sv-line:#E1E6EE;
+  --sv-display:"Red Hat Display","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --sv-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --sv-wrap:1240px;
+}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
+.sv-wrap{max-width:var(--sv-wrap);margin:0 auto;padding:0 1.5rem;box-sizing:border-box}
+.sv-skip{position:absolute;left:-9999px}
+.sv-skip:focus{left:1rem;top:1rem;z-index:10000;background:#fff;color:var(--sv-navy);padding:.6rem 1rem;border-radius:8px}
+.sv-topbar a:focus-visible,.sv-header a:focus-visible,.sv-hero a:focus-visible,.sv-hero button:focus-visible,
+.sv-brands button:focus-visible,.sv-footer a:focus-visible,.sv-bot button:focus-visible,.sv-bot a:focus-visible,.sv-bot-fab:focus-visible{outline:3px solid var(--sv-orange);outline-offset:2px}
+
+/* Barra superior */
+.sv-topbar{background:var(--sv-navy);color:#DCE3F0;font-size:.82rem}
+.sv-topbar .sv-wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:38px}
+.sv-topbar strong{color:#fff;font-weight:600}
+.sv-topbar-links{display:flex;gap:1.25rem;white-space:nowrap}
+.sv-topbar a{color:#fff;text-decoration:none}
+.sv-topbar a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* Cabecera */
+.sv-header{position:sticky;top:0;z-index:900;background:#fff;border-bottom:1px solid var(--sv-line)}
+.sv-header .sv-wrap{display:flex;align-items:center;gap:1.5rem;min-height:72px}
+.sv-logo{display:flex;align-items:center;flex:none}
+.sv-logo img{height:56px;width:auto;display:block}
+.sv-nav{display:flex;gap:.25rem;margin-left:auto}
+.sv-nav a{color:var(--sv-navy);text-decoration:none;font-weight:600;font-size:.95rem;padding:.55rem .85rem;border-radius:8px}
+.sv-nav a:hover{background:var(--sv-mist)}
+.sv-actions{display:flex;gap:.6rem;align-items:center}
+.sv-btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:999px;padding:.65rem 1.15rem;font:700 .92rem var(--sv-body);text-decoration:none;border:0;cursor:pointer;white-space:nowrap}
+.sv-btn-primary{background:var(--sv-orange);color:#fff}
+.sv-btn-primary:hover{background:var(--sv-orange-d)}
+.sv-btn-ghost{background:#fff;color:var(--sv-navy);box-shadow:inset 0 0 0 1.5px var(--sv-navy)}
+.sv-btn-ghost:hover{background:var(--sv-navy);color:#fff}
+
+/* Hero */
+.sv-hero{position:relative;background:#fff url("assets/hero-soliva.webp") right center/cover no-repeat;overflow:hidden}
+.sv-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.94) 0,rgba(255,255,255,.78) 36%,rgba(255,255,255,0) 60%);pointer-events:none}
+.sv-hero-photo{display:none}
+.sv-hero .sv-wrap{position:relative;padding-top:4.5rem;padding-bottom:4.5rem;min-height:600px;display:flex;flex-direction:column;justify-content:center}
+.sv-hero-copy{max-width:700px}
+.sv-hero h1{font-family:var(--sv-display);font-weight:900;font-size:clamp(2.3rem,5.4vw,4.4rem);line-height:1.02;letter-spacing:-.025em;color:var(--sv-navy);margin:0 0 1.4rem}
+.sv-hero h1 em{font-style:normal;color:var(--sv-orange);position:relative;display:inline-block}
+.sv-hero h1 em svg{position:absolute;left:0;bottom:-.2em;width:100%;height:.22em;overflow:visible}
+.sv-hero-sub{font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.55;color:#3D475B;margin:0 0 1.75rem;max-width:34em}
+.sv-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;list-style:none;margin:0 0 1.25rem;padding:0;max-width:680px}
+.sv-card{background:rgba(255,255,255,.94);border-radius:16px;padding:1rem 1rem 1.05rem;box-shadow:0 10px 30px rgba(14,30,63,.10);color:var(--sv-muted);font-size:.86rem;line-height:1.3}
+.sv-card svg{display:block;width:30px;height:30px;color:var(--sv-orange);margin-bottom:.45rem}
+.sv-card b{display:block;font-family:var(--sv-display);font-weight:900;font-size:1.45rem;line-height:1.1;color:var(--sv-navy);letter-spacing:-.01em}
+.sv-card b.sv-sm{font-size:1.2rem}
+.sv-search{display:flex;align-items:center;gap:.5rem;background:#fff;border-radius:999px;padding:.4rem .4rem .4rem 1.2rem;box-shadow:0 12px 34px rgba(14,30,63,.16),inset 0 0 0 1.5px var(--sv-line);max-width:680px;box-sizing:border-box}
+.sv-search:focus-within{box-shadow:0 12px 34px rgba(14,30,63,.16),inset 0 0 0 2px var(--sv-orange)}
+.sv-search > svg{flex:none;color:var(--sv-muted)}
+.sv-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:500 1rem var(--sv-body);color:var(--sv-ink);padding:.7rem .25rem;-webkit-appearance:none;appearance:none}
+.sv-search input::-webkit-search-cancel-button{display:none}
+.sv-search-clear{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--sv-mist);color:var(--sv-muted);font-size:1.2rem;line-height:1;cursor:pointer}
+.sv-search-clear[hidden]{display:none}
+.sv-search .sv-btn{padding:.85rem 1.4rem;font-size:1rem}
+
+/* Cinta de familias */
+.sv-marquee{background:var(--sv-navy);color:#fff;overflow:hidden;font:800 .95rem var(--sv-display);letter-spacing:.08em}
+.sv-marquee-track{display:flex;width:max-content;animation:sv-marquee 38s linear infinite}
+.sv-marquee-track span{padding:.85rem 1.1rem;white-space:nowrap}
+.sv-marquee-track i{font-style:normal;color:var(--sv-orange);padding:.85rem 0}
+@keyframes sv-marquee{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.sv-marquee-track{animation:none}html{scroll-behavior:auto}}
+
+/* Cabeceras de sección */
+.sv-section{padding:3.5rem 0 1rem}
+.sv-section-head{max-width:var(--sv-wrap);margin:0 auto;padding:3.25rem 1.5rem 1.25rem;box-sizing:border-box}
+.sv-eyebrow{margin:0 0 .35rem;color:var(--sv-orange);font-weight:700;font-size:.9rem}
+.sv-h2{font-family:var(--sv-display);font-weight:900;font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.1;letter-spacing:-.02em;color:var(--sv-navy);margin:0}
+.sv-lead{margin:.6rem 0 0;color:var(--sv-muted);font-size:1rem;line-height:1.55;max-width:46em}
+
+/* Marcas */
+.sv-brands{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
+.sv-brands button{border:1.5px solid var(--sv-line);background:#fff;color:var(--sv-navy);font:700 .9rem var(--sv-body);padding:.7rem 1.1rem;border-radius:12px;cursor:pointer}
+.sv-brands button:hover{border-color:var(--sv-orange);color:var(--sv-orange-d)}
+
+/* Guía (tarjetas informativas existentes) */
+.info-section{max-width:var(--sv-wrap);margin:0 auto;padding:3.5rem 1.5rem 2rem;box-sizing:border-box}
+.info-section .sv-h2{margin-bottom:1.5rem}
 .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
-.info-card{background:#f8faf8;border:1px solid #d1fae5;border-radius:10px;padding:1.1rem 1.25rem}
-.info-card strong{display:block;font-size:.95rem;font-weight:700;color:#1B4332;margin-bottom:.5rem}
-.info-card p{font-size:.85rem;color:#374151;line-height:1.6;margin:0}
+.info-card{background:var(--sv-mist);border:1px solid var(--sv-line);border-radius:14px;padding:1.2rem 1.3rem}
+.info-card strong{display:block;font-size:1rem;font-weight:700;color:var(--sv-navy);margin-bottom:.5rem}
+.info-card p{font-size:.9rem;color:#3D475B;line-height:1.6;margin:0}
+
+/* Quiénes somos */
+.sv-about{background:var(--sv-navy);color:#fff;margin-top:2.5rem}
+.sv-about .sv-wrap{padding-top:3.5rem;padding-bottom:3.5rem;display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:center}
+.sv-about .sv-h2{color:#fff}
+.sv-about .sv-lead{color:#C7D0E2}
+.sv-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:0}
+.sv-stats div{background:var(--sv-navy-2);border-radius:14px;padding:1.1rem 1.25rem}
+.sv-stats dt{order:2;color:#C7D0E2;font-size:.88rem;margin-top:.2rem}
+.sv-stats dd{margin:0;font-family:var(--sv-display);font-weight:900;font-size:1.9rem;line-height:1.1;color:#fff}
+.sv-stats div{display:flex;flex-direction:column}
+.sv-stats dd{order:1}
+.sv-trust{background:var(--sv-mist);border-bottom:1px solid var(--sv-line)}
+.sv-trust ul{list-style:none;margin:0 auto;padding:1.5rem;max-width:var(--sv-wrap);box-sizing:border-box;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.sv-trust li{font-size:.88rem;color:var(--sv-muted);line-height:1.35}
+.sv-trust li b{display:block;color:var(--sv-navy);font-size:.98rem}
+
+/* Pie */
+.sv-footer{background:#0A1630;color:#C7D0E2;padding:3rem 0 1.25rem;font-size:.92rem;line-height:1.6}
+.sv-footer-grid{max-width:var(--sv-wrap);margin:0 auto;padding:0 1.5rem;box-sizing:border-box;display:grid;grid-template-columns:1.3fr 1fr 1.3fr;gap:2.5rem}
+.sv-footer h3{font-family:var(--sv-display);font-weight:800;color:#fff;font-size:1.05rem;margin:0 0 .8rem}
+.sv-footer p{margin:0}
+.sv-footer a{color:#fff;text-underline-offset:3px}
+.sv-footer .contact-list{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.sv-footer .contact-list li{display:flex;align-items:center;gap:.6rem}
+.sv-footer .contact-icon{display:inline-flex;color:var(--sv-orange)}
+.sv-footer .copyleft{max-width:var(--sv-wrap);margin:2.25rem auto 0;padding:1.25rem 1.5rem 0;box-sizing:border-box;border-top:1px solid rgba(255,255,255,.12);font-size:.85rem;color:#9AA6BF}
+.limonada-link{color:inherit;text-decoration:none;font-weight:700}
+.limonada-link:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* Soliva Bot */
+.sv-bot-fab{position:fixed;right:1rem;bottom:1rem;z-index:950;width:84px;height:96px;border:0;background:transparent;padding:0;cursor:pointer;filter:drop-shadow(0 10px 18px rgba(14,30,63,.28))}
+.sv-bot-fab img{width:100%;height:100%;object-fit:contain;display:block}
+.sv-bot{position:fixed;right:1rem;bottom:7.5rem;z-index:951;width:min(340px,calc(100vw - 2rem));background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(14,30,63,.30);overflow:hidden;font-size:.92rem}
+.sv-bot[hidden]{display:none}
+.sv-bot-head{background:var(--sv-navy);color:#fff;display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem}
+.sv-bot-head img{width:40px;height:46px;object-fit:contain}
+.sv-bot-head b{font-family:var(--sv-display);font-weight:800;font-size:1.05rem}
+.sv-bot-head button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;padding:.2rem .4rem}
+.sv-bot-body{padding:1rem}
+.sv-bot-body p{margin:0 0 .8rem;background:var(--sv-mist);border-radius:4px 14px 14px 14px;padding:.75rem .9rem;line-height:1.45;color:var(--sv-ink)}
+.sv-bot-form{display:flex;gap:.4rem}
+.sv-bot-form input{flex:1;min-width:0;border:1.5px solid var(--sv-line);border-radius:999px;padding:.65rem .9rem;font:500 .92rem var(--sv-body);color:var(--sv-ink)}
+.sv-bot-form input:focus{outline:0;border-color:var(--sv-orange)}
+.sv-bot-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.75rem 0}
+.sv-bot-chips button{border:1.5px solid var(--sv-line);background:#fff;border-radius:999px;padding:.4rem .75rem;font:600 .82rem var(--sv-body);color:var(--sv-navy);cursor:pointer}
+.sv-bot-chips button:hover{border-color:var(--sv-orange)}
+.sv-bot-wa{display:flex;justify-content:center;width:100%;box-sizing:border-box}
+
+/* Aviso de cookies */
+.cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;display:none;align-items:center;justify-content:space-between;gap:1rem;max-width:960px;margin:auto;padding:1rem 1.1rem;border-radius:12px;background:#0A1630;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.cookie-banner.is-visible{display:flex}
+.cookie-banner p{margin:0}
+.cookie-banner a{color:#bfdbfe;text-decoration:underline}
+.cookie-banner button{border:0;border-radius:999px;background:#fff;color:#0A1630;font-weight:700;padding:.65rem 1rem;cursor:pointer;white-space:nowrap}
+
+/* Adaptación */
+@media (max-width:1020px){
+  .sv-nav{display:none}
+  .sv-actions{margin-left:auto}
+  .sv-about .sv-wrap{grid-template-columns:1fr;gap:2rem}
+}
+@media (max-width:860px){
+  .sv-topbar-text{display:none}
+  .sv-topbar .sv-wrap{justify-content:center}
+  .sv-hero{background:#fff}
+  .sv-hero::before{display:none}
+  .sv-hero-photo{display:block;height:210px;background:url("assets/hero-soliva-movil.webp") 70% center/cover no-repeat}
+  .sv-hero .sv-wrap{min-height:0;padding-top:1.75rem;padding-bottom:2.25rem}
+  .sv-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sv-card{box-shadow:0 6px 18px rgba(14,30,63,.10);border:1px solid var(--sv-line)}
+  .sv-trust ul{grid-template-columns:repeat(2,1fr)}
+  .sv-footer-grid{grid-template-columns:1fr;gap:1.75rem}
+}
+@media (max-width:640px){
+  .sv-logo img{height:42px}
+  .sv-actions .sv-btn-ghost{display:none}
+  .sv-search{flex-wrap:wrap;border-radius:20px;padding:.4rem .4rem .4rem 1rem}
+  .sv-search .sv-btn{flex:1 1 100%;justify-content:center;margin-top:.25rem}
+  .sv-topbar-links{gap:.9rem;font-size:.78rem}
+  .cookie-banner{flex-direction:column;align-items:flex-start}
+  .cookie-banner button{width:100%}
+  .sv-bot-fab{width:68px;height:78px}
+  .sv-bot{bottom:6.2rem}
+}
 </style>
 </head>
 <body>
+<a class="sv-skip" href="#catalogo">Saltar al catálogo</a>
 
-<!-- Cabecera principal verde con título integrado -->
-<header class="site-header">
-  <div class="site-header-inner">
-    <a class="brand" href="#">
-      <img src="assets/logo.png" alt="Desguaces Soliva" class="brand-logo" />
-    </a>
-    <div class="header-title">
-      <p class="hero-kicker">Más de <strong>180.000</strong> piezas verificadas</p>
-      <h1>Encuentra el <em>recambio</em> que necesitas</h1>
+<!-- Barra superior -->
+<div class="sv-topbar">
+  <div class="sv-wrap">
+    <p class="sv-topbar-text" style="margin:0"><strong>Recambios de coche, moto y furgoneta</strong> · Centro CAT autorizado</p>
+    <div class="sv-topbar-links">
+      <a href="mailto:hola@desguacessoliva.com">hola@desguacessoliva.com</a>
+      <a href="tel:+34649903695">649 903 695</a>
     </div>
-    <nav class="header-nav">
+  </div>
+</div>
+
+<!-- Cabecera -->
+<header class="sv-header">
+  <div class="sv-wrap">
+    <a class="sv-logo" href="#inicio" aria-label="Desguaces Soliva, inicio">
+      <img src="assets/logo-soliva.png" alt="Desguaces Soliva" width="372" height="162" />
+    </a>
+    <nav class="sv-nav" aria-label="Principal">
+      <a href="#inicio">Inicio</a>
       <a href="#catalogo">Catálogo</a>
+      <a href="#marcas">Marcas</a>
+      <a href="#guia">Guía</a>
       <a href="#contacto">Contacto</a>
-      <a id="wa-direct" href="#" target="_blank" rel="noopener" class="header-cta">
+    </nav>
+    <div class="sv-actions">
+      <a class="sv-btn sv-btn-ghost" href="tel:+34649903695">Llamar ahora</a>
+      <a id="wa-direct" href="https://wa.me/34649903695" target="_blank" rel="noopener" class="sv-btn sv-btn-primary">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2z"/></svg>
         WhatsApp
       </a>
-    </nav>
+    </div>
   </div>
 </header>
 
-<!-- Hero compacto: solo buscador y stats -->
-<section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <div class="hero-content">
-    <p class="hero-sub">Catálogo de recambios de ocasión de las principales marcas. Despiece y verificación pieza a pieza.</p>
+<!-- Hero -->
+<section class="sv-hero" id="inicio">
+  <div class="sv-hero-photo" aria-hidden="true"></div>
+  <div class="sv-wrap">
+    <div class="sv-hero-copy">
+      <h1>Encuentra el <em>recambio<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M2 15 C 70 4, 190 2, 298 9" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></em> que necesitas</h1>
+      <p class="sv-hero-sub">Piezas verificadas de coches, motos y furgonetas, con despiece propio y atención por WhatsApp. Recambios de calidad, un futuro más sostenible.</p>
 
-    <div class="hero-search">
-      <svg class="hero-search-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"/>
-        <path d="m20 20-3.5-3.5"/>
-      </svg>
-      <input id="q" type="search" placeholder="Buscar pieza, marca, modelo o referencia…" autocomplete="off" />
-      <button class="search-clear" id="q-clear" aria-label="Limpiar" hidden>×</button>
-    </div>
+      <ul class="sv-cards">
+        <li class="sv-card">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.400 7.400 0 0 0-1.700 1l-2.500-1-2 3.500L6.500 11a7.600 7.600 0 0 0 0 2l-2.100 1.600 2 3.500 2.500-1c.5.400 1.100.700 1.700 1l.4 2.600h4l.4-2.600c.6-.3 1.200-.6 1.700-1l2.500 1 2-3.500L19.400 13zM13 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+          Más de <b>180.000</b> piezas verificadas
+        </li>
+        <li class="sv-card">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.900 6.500A2 2 0 0 0 17 5H7a2 2 0 0 0-1.900 1.500L3.600 11H3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h10v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h1a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1h-.6l-1.500-4.500zM7.200 7h9.600l1.300 4H5.900l1.300-4zM6.500 15.500a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3zm11 0a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3z"/></svg>
+          <b>+1.200</b> modelos
+        </li>
+        <li class="sv-card">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 3S9 2.500 5.500 8C3.300 11.500 4.300 15 6 17l-2 3.500 1.700 1 1.900-3.300c2.300 1 5.700.9 8.400-2.200C20 11.500 20 3 20 3zM8.500 16.500c1-3.500 3.500-6.500 7-8.500-2.500 2.500-4.500 5.500-5.500 9l-1.500-.5z"/></svg>
+          <b>CAT</b> autorizado
+        </li>
+        <li class="sv-card">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.900-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.100-.2.2-.3.2-.6.1-1.700-.8-2.800-1.500-3.900-3.500-.3-.5.3-.5.8-1.500.1-.2 0-.3 0-.5 0-.1-.6-1.400-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.300 0 1.400 1 2.700 1.200 2.900.1.2 2 3.100 5 4.300.7.3 1.200.5 1.700.6.7.2 1.300.2 1.800.1.6-.1 1.600-.7 1.900-1.300.2-.6.2-1.200.1-1.300 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.400 17l-1.400 5 5.100-1.300A10 10 0 1 0 12 2zm0 18.300a8.300 8.300 0 0 1-4.200-1.200l-.3-.2-3 .8.8-2.900-.2-.3A8.300 8.300 0 1 1 12 20.300z"/></svg>
+          Atención por <b class="sv-sm">WhatsApp</b>
+        </li>
+      </ul>
 
-    <div class="hero-stats">
-      <div class="stat">
-        <strong id="hero-count">—</strong>
-        <span>referencias</span>
-      </div>
-      <div class="stat">
-        <strong id="hero-brands">—</strong>
-        <span>marcas</span>
-      </div>
-      <div class="stat">
-        <strong>+1.200</strong>
-        <span>modelos</span>
-      </div>
-      <div class="stat">
-        <strong id="hero-updated">hoy</strong>
-        <span>actualizado</span>
+      <div class="sv-search" role="search">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg>
+        <input id="q" type="search" placeholder="Pieza, marca, modelo o referencia…" autocomplete="off" aria-label="Buscar pieza, marca, modelo o referencia" />
+        <button class="sv-search-clear" id="q-clear" aria-label="Limpiar" hidden>×</button>
+        <button class="sv-btn sv-btn-primary" id="sv-search-go" type="button">Buscar piezas</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Filtros -->
+<!-- Cinta de familias -->
+<div class="sv-marquee" aria-hidden="true">
+  <div class="sv-marquee-track">
+    <span>MOTOR</span><i>·</i><span>CAJAS DE CAMBIO</span><i>·</i><span>CARROCERÍA</span><i>·</i><span>ÓPTICA</span><i>·</i><span>SUSPENSIÓN</span><i>·</i><span>ELECTRÓNICA</span><i>·</i><span>LLANTAS</span><i>·</i><span>INTERIOR</span><i>·</i>
+    <span>MOTOR</span><i>·</i><span>CAJAS DE CAMBIO</span><i>·</i><span>CARROCERÍA</span><i>·</i><span>ÓPTICA</span><i>·</i><span>SUSPENSIÓN</span><i>·</i><span>ELECTRÓNICA</span><i>·</i><span>LLANTAS</span><i>·</i><span>INTERIOR</span><i>·</i>
+  </div>
+</div>
+
+<!-- Catálogo -->
+<div class="sv-section-head">
+  <p class="sv-eyebrow">Recién llegadas</p>
+  <h2 class="sv-h2">Últimas piezas publicadas</h2>
+  <p class="sv-lead">Cada pieza se desmonta, se revisa y se fotografía antes de publicarse. Filtra por familia, marca, modelo o año y pregunta disponibilidad por WhatsApp.</p>
+</div>
+
 <section class="filters" id="catalogo">
   <div class="filters-inner">
     <div class="select-row">
@@ -145,10 +348,19 @@
 <!-- Estado / loading -->
 <p class="status" id="status">Cargando catálogo…</p>
 
+<!-- Marcas -->
+<section class="sv-section" id="marcas" hidden>
+  <div class="sv-wrap">
+    <p class="sv-eyebrow">Catálogo</p>
+    <h2 class="sv-h2">Busca por marca</h2>
+    <div class="sv-brands" id="sv-brands"></div>
+  </div>
+</section>
 
 <!-- Todo lo que necesitas saber -->
-<section class="info-section">
-  <h2>Todo lo que necesitas saber</h2>
+<section class="info-section" id="guia">
+  <p class="sv-eyebrow">Guías y consejos</p>
+  <h2 class="sv-h2">Todo lo que necesitas saber</h2>
   <div class="info-grid">
     <div class="info-card">
       <strong>🏭 Centro CAT autorizado</strong>
@@ -176,31 +388,58 @@
     </div>
   </div>
 </section>
+
+<!-- Quiénes somos -->
+<section class="sv-about" id="nosotros">
+  <div class="sv-wrap">
+    <div>
+      <p class="sv-eyebrow">Quiénes somos</p>
+      <h2 class="sv-h2">Coches, motos y furgonetas, pieza a pieza</h2>
+      <p class="sv-lead">No somos un desguace de un solo tipo de vehículo. Despiezamos turismos, motocicletas y furgonetas de las principales marcas, y verificamos cada recambio antes de ponerlo en el catálogo.</p>
+    </div>
+    <dl class="sv-stats">
+      <div><dt>referencias en catálogo</dt><dd id="hero-count">—</dd></div>
+      <div><dt>marcas</dt><dd id="hero-brands">—</dd></div>
+      <div><dt>modelos</dt><dd>+1.200</dd></div>
+      <div><dt>actualizado</dt><dd id="hero-updated">hoy</dd></div>
+    </dl>
+  </div>
+</section>
+
+<div class="sv-trust">
+  <ul>
+    <li><b>Garantía legal</b>1 año a particulares, 6 meses a profesionales</li>
+    <li><b>Piezas verificadas</b>Revisadas una a una</li>
+    <li><b>Atención por WhatsApp</b>Confirmamos compatibilidad antes de comprar</li>
+    <li><b>CAT autorizado</b>Trazabilidad de cada pieza</li>
+  </ul>
+</div>
+
 <!-- Pie -->
-<footer class="site-footer" id="contacto">
-  <div class="footer-grid">
+<footer class="sv-footer" id="contacto">
+  <div class="sv-footer-grid">
     <div>
       <h3>Desguaces Soliva</h3>
-      <p>Catálogo de recambios de ocasión. Verificación y despiece propios. Las consultas se gestionan por WhatsApp; los precios son orientativos hasta confirmar disponibilidad.</p>
+      <p>Catálogo de recambios de ocasión para coches, motos y furgonetas. Verificación y despiece propios. Las consultas se gestionan por WhatsApp; los precios son orientativos hasta confirmar disponibilidad.</p>
     </div>
     <div>
       <h3>Contacto</h3>
       <ul class="contact-list">
         <li>
           <span class="contact-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2zm6 16.1a8.3 8.3 0 0 1-12.7 1.1l-.3-.2-3 .8.8-2.9-.2-.3a8.3 8.3 0 1 1 15.4-1.4 8.3 8.3 0 0 1 0 2.9z"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.2-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.5-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 .9-1 2.3 0 1.4 1 2.7 1.2 2.9.1.2 2 3.1 5 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.6-.7 1.9-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2A10 10 0 0 0 3.4 17l-1.4 5 5.1-1.3A10 10 0 1 0 12 2zm6 16.1a8.300 8.300 0 0 1-12.700 1.100l-.3-.2-3 .8.8-2.900-.2-.3a8.300 8.300 0 1 1 15.400-1.400 8.300 8.300 0 0 1 0 2.900z"/></svg>
           </span>
-          <a id="wa-direct-footer" href="#" target="_blank" rel="noopener">WhatsApp 649 903 695</a>
+          <a id="wa-direct-footer" href="https://wa.me/34649903695" target="_blank" rel="noopener">WhatsApp 649 903 695</a>
         </li>
         <li>
           <span class="contact-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.920v3a2 2 0 0 1-2.180 2 19.790 19.790 0 0 1-8.630-3.070 19.500 19.500 0 0 1-6-6 19.790 19.790 0 0 1-3.070-8.670A2 2 0 0 1 4.110 2h3a2 2 0 0 1 2 1.720c.127.960.361 1.903.700 2.810a2 2 0 0 1-.45 2.110L8.090 9.910a16 16 0 0 0 6 6l1.270-1.270a2 2 0 0 1 2.110-.45c.907.339 1.850.573 2.810.700A2 2 0 0 1 22 16.920z"/></svg>
           </span>
           <a href="tel:+34649903695">+34 649 903 695</a>
         </li>
         <li>
           <span class="contact-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.100 0 2 .9 2 2v12c0 1.100-.9 2-2 2H4c-1.100 0-2-.9-2-2V6c0-1.100.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </span>
           <a href="mailto:hola@desguacessoliva.com">hola@desguacessoliva.com</a>
         </li>
@@ -221,7 +460,35 @@
   <div class="modal-body" id="modal-body"></div>
 </dialog>
 
+<!-- Soliva Bot -->
+<button class="sv-bot-fab" id="sv-bot-fab" type="button" aria-label="Abrir Soliva Bot" aria-expanded="false" aria-controls="sv-bot">
+  <img src="assets/soliva-bot.webp" alt="" width="517" height="600" loading="lazy" />
+</button>
+<div class="sv-bot" id="sv-bot" role="dialog" aria-label="Soliva Bot" hidden>
+  <div class="sv-bot-head">
+    <img src="assets/soliva-bot.webp" alt="" width="517" height="600" loading="lazy" />
+    <b>Soliva Bot</b>
+    <button type="button" id="sv-bot-close" aria-label="Cerrar Soliva Bot">×</button>
+  </div>
+  <div class="sv-bot-body">
+    <p>Hola, soy Soliva Bot. Dime qué pieza buscas y te la enseño en el catálogo.</p>
+    <div class="sv-bot-form">
+      <input id="sv-bot-q" type="text" placeholder="Ej.: faro Golf 2015" aria-label="Qué pieza buscas" autocomplete="off" />
+      <button class="sv-btn sv-btn-primary" id="sv-bot-go" type="button">Buscar</button>
+    </div>
+    <div class="sv-bot-chips" id="sv-bot-chips">
+      <button type="button">Motor</button>
+      <button type="button">Caja de cambios</button>
+      <button type="button">Faro</button>
+      <button type="button">Retrovisor</button>
+      <button type="button">Centralita</button>
+    </div>
+    <a class="sv-btn sv-btn-ghost sv-bot-wa" id="sv-bot-wa" href="https://wa.me/34649903695" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+  </div>
+</div>
+
 <script src="assets/app.js" defer></script>
+
 <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Aviso de cookies">
   <p>Utilizamos cookies técnicas y almacenamiento local para recordar tus preferencias y mejorar la navegación. </p>
   <button type="button" id="cookie-accept">Aceptar</button>
@@ -237,6 +504,93 @@
   button.addEventListener('click', function(){
     try { localStorage.setItem(key, '1'); } catch (e) {}
     banner.classList.remove('is-visible');
+  });
+})();
+</script>
+
+<script>
+/* Portada Soliva: buscador del hero, marcas y Soliva Bot (sin IA, solo reglas) */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var q = $('q'), catalogo = $('catalogo');
+
+  var y = $('year');
+  if (y && !y.textContent) y.textContent = new Date().getFullYear();
+
+  function irAlCatalogo(){
+    if (catalogo) catalogo.scrollIntoView({ block: 'start' });
+  }
+  function buscar(texto){
+    if (!q) return;
+    q.value = texto;
+    q.dispatchEvent(new Event('input', { bubbles: true }));
+    q.dispatchEvent(new Event('change', { bubbles: true }));
+    irAlCatalogo();
+  }
+
+  /* Buscador del hero */
+  var go = $('sv-search-go');
+  if (go) go.addEventListener('click', irAlCatalogo);
+  if (q) q.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); irAlCatalogo(); }
+  });
+
+  /* Marcas: se generan a partir del desplegable que rellena app.js */
+  var sel = $('f-brand'), caja = $('sv-brands'), seccion = $('marcas');
+  function pintarMarcas(){
+    if (!sel || !caja || !seccion) return;
+    var opciones = Array.prototype.filter.call(sel.options, function(o){ return o.value; });
+    if (!opciones.length) { seccion.hidden = true; return; }
+    caja.innerHTML = '';
+    opciones.slice(0, 60).forEach(function(o){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = o.textContent;
+      b.addEventListener('click', function(){
+        sel.value = o.value;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        irAlCatalogo();
+      });
+      caja.appendChild(b);
+    });
+    seccion.hidden = false;
+  }
+  if (sel && 'MutationObserver' in window) {
+    new MutationObserver(pintarMarcas).observe(sel, { childList: true });
+  }
+  pintarMarcas();
+
+  /* Soliva Bot */
+  var fab = $('sv-bot-fab'), bot = $('sv-bot'), cerrar = $('sv-bot-close');
+  var botQ = $('sv-bot-q'), botGo = $('sv-bot-go'), chips = $('sv-bot-chips'), botWa = $('sv-bot-wa');
+  function abrir(estado){
+    if (!bot || !fab) return;
+    bot.hidden = !estado;
+    fab.setAttribute('aria-expanded', estado ? 'true' : 'false');
+    if (estado && botQ) botQ.focus();
+    if (estado && botWa) {
+      var wa = $('wa-direct');
+      if (wa && wa.getAttribute('href') && wa.getAttribute('href') !== '#') botWa.href = wa.href;
+    }
+  }
+  if (fab) fab.addEventListener('click', function(){ abrir(bot.hidden); });
+  if (cerrar) cerrar.addEventListener('click', function(){ abrir(false); fab.focus(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && bot && !bot.hidden) { abrir(false); fab.focus(); }
+  });
+  function botBuscar(){
+    var t = (botQ.value || '').trim();
+    if (!t) { botQ.focus(); return; }
+    abrir(false);
+    buscar(t);
+  }
+  if (botGo) botGo.addEventListener('click', botBuscar);
+  if (botQ) botQ.addEventListener('keydown', function(e){ if (e.key === 'Enter') botBuscar(); });
+  if (chips) chips.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    abrir(false);
+    buscar(b.textContent);
   });
 })();
 </script>
