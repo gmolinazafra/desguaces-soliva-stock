@@ -45,7 +45,7 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 .sv-skip{position:absolute;left:-9999px}
 .sv-skip:focus{left:1rem;top:1rem;z-index:10000;background:#fff;color:var(--sv-navy);padding:.6rem 1rem;border-radius:8px}
 .sv-topbar a:focus-visible,.sv-header a:focus-visible,.sv-hero a:focus-visible,.sv-hero button:focus-visible,
-.sv-brands button:focus-visible,.sv-footer a:focus-visible,.sv-bot button:focus-visible,.sv-bot a:focus-visible,.sv-bot-fab:focus-visible{outline:3px solid var(--sv-orange);outline-offset:2px}
+.sv-brands button:focus-visible,.sv-footer a:focus-visible{outline:3px solid var(--sv-orange);outline-offset:2px}
 
 /* Barra superior */
 .sv-topbar{background:var(--sv-navy);color:#DCE3F0;font-size:.82rem}
@@ -152,25 +152,6 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 .limonada-link{color:inherit;text-decoration:none;font-weight:700}
 .limonada-link:hover{text-decoration:underline;text-underline-offset:3px}
 
-/* Soliva Bot */
-.sv-bot-fab{position:fixed;right:1rem;bottom:1rem;z-index:950;width:84px;height:96px;border:0;background:transparent;padding:0;cursor:pointer;filter:drop-shadow(0 10px 18px rgba(14,30,63,.28))}
-.sv-bot-fab img{width:100%;height:100%;object-fit:contain;display:block}
-.sv-bot{position:fixed;right:1rem;bottom:7.5rem;z-index:951;width:min(340px,calc(100vw - 2rem));background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(14,30,63,.30);overflow:hidden;font-size:.92rem}
-.sv-bot[hidden]{display:none}
-.sv-bot-head{background:var(--sv-navy);color:#fff;display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem}
-.sv-bot-head img{width:40px;height:46px;object-fit:contain}
-.sv-bot-head b{font-family:var(--sv-display);font-weight:800;font-size:1.05rem}
-.sv-bot-head button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;padding:.2rem .4rem}
-.sv-bot-body{padding:1rem}
-.sv-bot-body p{margin:0 0 .8rem;background:var(--sv-mist);border-radius:4px 14px 14px 14px;padding:.75rem .9rem;line-height:1.45;color:var(--sv-ink)}
-.sv-bot-form{display:flex;gap:.4rem}
-.sv-bot-form input{flex:1;min-width:0;border:1.5px solid var(--sv-line);border-radius:999px;padding:.65rem .9rem;font:500 .92rem var(--sv-body);color:var(--sv-ink)}
-.sv-bot-form input:focus{outline:0;border-color:var(--sv-orange)}
-.sv-bot-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.75rem 0}
-.sv-bot-chips button{border:1.5px solid var(--sv-line);background:#fff;border-radius:999px;padding:.4rem .75rem;font:600 .82rem var(--sv-body);color:var(--sv-navy);cursor:pointer}
-.sv-bot-chips button:hover{border-color:var(--sv-orange)}
-.sv-bot-wa{display:flex;justify-content:center;width:100%;box-sizing:border-box}
-
 /* Aviso de cookies */
 .cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;display:none;align-items:center;justify-content:space-between;gap:1rem;max-width:960px;margin:auto;padding:1rem 1.1rem;border-radius:12px;background:#0A1630;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.22);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .cookie-banner.is-visible{display:flex}
@@ -210,8 +191,6 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
   .sv-topbar-links{gap:.9rem;font-size:.78rem}
   .cookie-banner{flex-direction:column;align-items:flex-start}
   .cookie-banner button{width:100%}
-  .sv-bot-fab{width:68px;height:78px}
-  .sv-bot{bottom:6.2rem}
 }
 </style>
 </head>
@@ -467,34 +446,8 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
   <div class="modal-body" id="modal-body"></div>
 </dialog>
 
-<!-- Soliva Bot -->
-<button class="sv-bot-fab" id="sv-bot-fab" type="button" aria-label="Abrir Soliva Bot" aria-expanded="false" aria-controls="sv-bot">
-  <img src="assets/soliva-bot.webp" alt="" width="517" height="600" loading="lazy" />
-</button>
-<div class="sv-bot" id="sv-bot" role="dialog" aria-label="Soliva Bot" hidden>
-  <div class="sv-bot-head">
-    <img src="assets/soliva-bot.webp" alt="" width="517" height="600" loading="lazy" />
-    <b>Soliva Bot</b>
-    <button type="button" id="sv-bot-close" aria-label="Cerrar Soliva Bot">×</button>
-  </div>
-  <div class="sv-bot-body">
-    <p>Hola, soy Soliva Bot. Dime qué pieza buscas y te la enseño en el catálogo.</p>
-    <div class="sv-bot-form">
-      <input id="sv-bot-q" type="text" placeholder="Ej.: faro Golf 2015" aria-label="Qué pieza buscas" autocomplete="off" />
-      <button class="sv-btn sv-btn-primary" id="sv-bot-go" type="button">Buscar</button>
-    </div>
-    <div class="sv-bot-chips" id="sv-bot-chips">
-      <button type="button">Motor</button>
-      <button type="button">Caja de cambios</button>
-      <button type="button">Faro</button>
-      <button type="button">Retrovisor</button>
-      <button type="button">Centralita</button>
-    </div>
-    <a class="sv-btn sv-btn-ghost sv-bot-wa" id="sv-bot-wa" href="https://wa.me/34649903695" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
-  </div>
-</div>
-
 <script src="assets/app.js" defer></script>
+<script src="assets/soliva-bot.js?v=1" defer></script>
 
 <div class="cookie-banner" id="cookie-banner" role="region" aria-label="Aviso de cookies">
   <p>Utilizamos cookies técnicas y almacenamiento local para recordar tus preferencias y mejorar la navegación. </p>
@@ -516,7 +469,7 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
 </script>
 
 <script>
-/* Portada Soliva: buscador del hero, marcas y Soliva Bot (sin IA, solo reglas) */
+/* Portada Soliva: buscador del hero y marcas. El bot va en assets/soliva-bot.js */
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   var q = $('q'), catalogo = $('catalogo');
@@ -566,39 +519,6 @@ body{margin:0;background:#fff;color:var(--sv-ink);font-family:var(--sv-body)}
     new MutationObserver(pintarMarcas).observe(sel, { childList: true });
   }
   pintarMarcas();
-
-  /* Soliva Bot */
-  var fab = $('sv-bot-fab'), bot = $('sv-bot'), cerrar = $('sv-bot-close');
-  var botQ = $('sv-bot-q'), botGo = $('sv-bot-go'), chips = $('sv-bot-chips'), botWa = $('sv-bot-wa');
-  function abrir(estado){
-    if (!bot || !fab) return;
-    bot.hidden = !estado;
-    fab.setAttribute('aria-expanded', estado ? 'true' : 'false');
-    if (estado && botQ) botQ.focus();
-    if (estado && botWa) {
-      var wa = $('wa-direct');
-      if (wa && wa.getAttribute('href') && wa.getAttribute('href') !== '#') botWa.href = wa.href;
-    }
-  }
-  if (fab) fab.addEventListener('click', function(){ abrir(bot.hidden); });
-  if (cerrar) cerrar.addEventListener('click', function(){ abrir(false); fab.focus(); });
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && bot && !bot.hidden) { abrir(false); fab.focus(); }
-  });
-  function botBuscar(){
-    var t = (botQ.value || '').trim();
-    if (!t) { botQ.focus(); return; }
-    abrir(false);
-    buscar(t);
-  }
-  if (botGo) botGo.addEventListener('click', botBuscar);
-  if (botQ) botQ.addEventListener('keydown', function(e){ if (e.key === 'Enter') botBuscar(); });
-  if (chips) chips.addEventListener('click', function(e){
-    var b = e.target.closest('button');
-    if (!b) return;
-    abrir(false);
-    buscar(b.textContent);
-  });
 })();
 </script>
 </body>
