@@ -76,7 +76,15 @@ jobs:
           key: stock-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Build index + family JSONs + vehiculos.json
+        if: steps.sync.outputs.fuente != 'vacio'
         run: node scripts/build-index.js
+
+      # Respaldo: Metasync no ha devuelto piezas y no hay copia anterior.
+      # Se copian los datos ya publicados por ReciclaCAT (mismo inventario
+      # y mismo formato) para no publicar la web vacía.
+      - name: Fallback - copy published catalog from ReciclaCAT
+        if: steps.sync.outputs.fuente == 'vacio'
+        run: node scripts/mirror-reciclacat.js
 
       - name: Prepare site for Pages
         run: |
