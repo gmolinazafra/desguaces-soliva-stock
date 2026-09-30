@@ -894,6 +894,28 @@
     if (cat) cat.scrollIntoView({ block: "start" });
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", montar);
-  else montar();
+  /* Enlace directo al bot (para WhatsApp, redes, QR…):
+       https://desguacessoliva.com/#bot                 → abre el bot
+       https://desguacessoliva.com/?bot                 → abre el bot
+       https://desguacessoliva.com/?pieza=faro+golf     → abre el bot y busca esa pieza
+     También sirve #bot en cualquier enlace de la propia web. */
+  function abrirDesdeEnlace() {
+    var params = new URLSearchParams(location.search);
+    var pieza = (params.get("pieza") || params.get("q") || "").trim().slice(0, 100);
+    var quiere = pieza || params.has("bot") || /^#bot$/i.test(location.hash);
+    if (!quiere) return;
+    abrir(true);
+    // la búsqueda entra después del saludo, como si la persona la escribiera
+    if (pieza) cola = cola.then(function () { yo(pieza); procesar(pieza); });
+  }
+  function iniciar() {
+    montar();
+    abrirDesdeEnlace();
+    window.addEventListener("hashchange", function () {
+      if (/^#bot$/i.test(location.hash) && el.panel.hidden) abrir(true);
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
+  else iniciar();
 })();
