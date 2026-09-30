@@ -245,7 +245,13 @@
       }
       if (ok) out.push(i);
     }
+    // Relevancia primero (la misma función que usa el catálogo en app.js)
+    var punt = {}, rel = null;
+    try { if (typeof relevancia === "function") rel = relevancia; } catch (e) {}
+    if (rel && tokens.length) out.forEach(function (i) { punt[i] = rel(rows[i][col.art], tokens); });
     out.sort(function (a, b) {
+      var r = (punt[b] || 0) - (punt[a] || 0);
+      if (r !== 0) return r;
       var d = (rows[b][col.h] || 0) - (rows[a][col.h] || 0);
       return d !== 0 ? d : (rows[b][col.u] || 0) - (rows[a][col.u] || 0);
     });

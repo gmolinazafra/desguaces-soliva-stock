@@ -145,6 +145,38 @@ const STOPWORDS = new Set([
   "en","con","para","por","y","o","a","al","su","sus",
 ]);
 
+/* ---------- relevancia de la búsqueda ----------
+   Con una búsqueda escrita, primero van las piezas cuyo NOMBRE es lo buscado
+   y después las que solo contienen la palabra en otro sitio. Para "motor":
+     1. "MOTOR" / "MOTOR COMPLETO"          (el nombre es lo buscado)
+     2. "MOTOR ARRANQUE", "MOTOR LIMPIA"…    (el nombre empieza por lo buscado)
+     3. "SOPORTE MOTOR", "TAPA MOTOR"…       (el nombre contiene la palabra)
+     4. resto (la palabra solo está en marca, modelo, versión o referencias)
+   Se usa también desde el bot (assets/soliva-bot.js). */
+const COMPLETO = /^(completo|completa|completos|completas|entero|entera)$/;
+function relevancia(art, tokens) {
+  if (!tokens || !tokens.length) return 0;
+  const a = normSearch(art).replace(/[^a-z0-9. ]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!a) return 0;
+  const pal = a.split(" ").filter(w => !STOPWORDS.has(w));
+  const empieza = (w, t) => w === t || w.startsWith(t);
+  // Solo cuentan las palabras buscadas que están en el NOMBRE de la pieza;
+  // las demás (marca, modelo, año…) ya se han usado para filtrar.
+  const tp = tokens.filter(t => pal.some(w => empieza(w, t)));
+  if (!tp.length) return 0;
+  // El orden de las palabras da igual: "arranque motor" = "motor arranque"
+  const cubre = lista => lista.length === tp.length && tp.every(t => lista.some(w => empieza(w, t)));
+  const inicio = pal.slice(0, tp.length);
+  let base;
+  if (cubre(pal)) base = 1000;                                                          // el nombre es lo buscado
+  else if (pal.length === tp.length + 1 && cubre(inicio) && COMPLETO.test(pal[pal.length - 1])) base = 950; // "... completo"
+  else if (cubre(inicio)) base = 800;                                                   // el nombre empieza por lo buscado
+  else if (tp.some(t => empieza(pal[0], t))) base = 700;                                // empieza por una de las palabras
+  else base = 500;                                                                      // la contiene más adelante
+  // Primero cuántas palabras buscadas hay en el nombre; a igualdad, nombres más cortos primero
+  return tp.length * 2000 + base - Math.min(pal.length, 20);
+}
+
 /* ---------- carga inicial ---------- */
 async function loadAll() {
   const status = document.getElementById("status");
@@ -300,8 +332,19 @@ function applyFilters() {
     out.push(i);
   }
 
-  // Ordenación
-  switch (state.sort) {
+  // Ordenación. Con búsqueda escrita, las órdenes por defecto ("Recién añadidas"
+  // y "Destacadas") ordenan primero por relevancia; precio y año se respetan tal cual.
+  if (tokens && (state.sort === "newest" || state.sort === "rel")) {
+    const punt = new Map();
+    for (const i of out) punt.set(i, relevancia(rows[i][COL.art], tokens));
+    out.sort((a, b) => {
+      const d = punt.get(b) - punt.get(a);
+      if (d !== 0) return d;
+      const imgDiff = (rows[b][COL.h]||0) - (rows[a][COL.h]||0);
+      if (imgDiff !== 0) return imgDiff;
+      return state.sort === "newest" ? (rows[b][COL.u]||0) - (rows[a][COL.u]||0) : a - b;
+    });
+  } else switch (state.sort) {
     case "price-asc":  out.sort((a,b) => (rows[a][COL.p]||0) - (rows[b][COL.p]||0)); break;
     case "price-desc": out.sort((a,b) => (rows[b][COL.p]||0) - (rows[a][COL.p]||0)); break;
     case "year-desc":  out.sort((a,b) => (rows[b][COL.y1]||rows[b][COL.y0]||0) - (rows[a][COL.y1]||rows[a][COL.y0]||0)); break;
