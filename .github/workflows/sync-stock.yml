@@ -40,29 +40,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Mismo origen que ReciclaCAT: CSV de CRVNET por FTP (mismo inventario).
-      - name: Download CSVs from FTP (stock + vehiculos)
-        id: ftp
-        continue-on-error: true
-        env:
-          FTP_HOST:            ${{ secrets.FTP_HOST }}
-          FTP_PORT:            ${{ secrets.FTP_PORT }}
-          FTP_USER:            ${{ secrets.FTP_USER }}
-          FTP_PASSWORD:        ${{ secrets.FTP_PASSWORD }}
-          FTP_REMOTE_PATH:     ${{ secrets.FTP_REMOTE_PATH }}
-          FTP_REMOTE_PATH_VEH: ${{ secrets.FTP_REMOTE_PATH_VEH }}
-          FTP_SECURE:          ${{ secrets.FTP_SECURE }}
-        run: node scripts/sync-stock.js
+      # 20/10/2026: REDIA ha parado su sistema (CRVNET/FTP y Metasync).
+      # El inventario salvado de Soliva se lee de Red Desguace, con las
+      # fotos del R2 propio (fotos.reddesguaces.com).
+      # Si la descarga falla o llega incompleta, el paso da error y NO se
+      # despliega: la web sigue con la última versión publicada.
+      - name: Download stock from Red Desguace (stock + vehiculos)
+        run: node scripts/sync-reddesguace.js
 
       - name: Build index + family JSONs + vehiculos.json
-        if: steps.ftp.outcome == 'success'
         run: node scripts/build-index.js
-
-      # Respaldo: si el FTP falla, se copia el catálogo ya publicado por
-      # ReciclaCAT (mismo inventario y mismo formato) para no publicar vacío.
-      - name: Fallback - copy published catalog from ReciclaCAT
-        if: steps.ftp.outcome != 'success'
-        run: node scripts/mirror-reciclacat.js
 
       - name: Prepare site for Pages
         run: |
