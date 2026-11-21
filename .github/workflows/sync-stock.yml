@@ -53,14 +53,22 @@ jobs:
 
       - name: Prepare site for Pages
         run: |
-          rm -rf node_modules
-          rm -f data/stock.csv
-          rm -f data/vehiculos.csv
           # Cache-busting de assets/app.js: añadimos el SHA corto del commit como
           # query string en cada deploy, para que el navegador/CDN nunca sirvan
           # una copia vieja del script tras un cambio de código (el campo solo
           # cambia cuando cambia el commit desplegado, no en cada cron sin código nuevo).
           sed -i "s#assets/app\\.js\"#assets/app.js?v=${GITHUB_SHA::7}\"#" index.html
+          # Seguridad (21/11/2026): se publica SOLO lo que la web necesita.
+          # Antes se subía la carpeta entera, así que scripts/, README.md,
+          # package.json y los CSV intermedios quedaban a la vista en
+          # desguacessoliva.com/scripts/… con la configuración de la descarga.
+          rm -rf _site && mkdir _site
+          cp -r index.html favicon.ico CNAME assets _site/
+          mkdir -p _site/data
+          cp -r data/meta.json data/vehiculos.json data/index data/familias _site/data/
+          # Nunca publicar los CSV de origen
+          find _site -name '*.csv' -delete
+          echo "Publicado:"; find _site -maxdepth 2 | sort
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -68,7 +76,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
