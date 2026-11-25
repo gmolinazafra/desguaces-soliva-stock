@@ -1,0 +1,33 @@
+# Alarma de claves filtradas: revisa con Gitleaks cada subida y avisa (fallo en GitHub + correo) si entra una clave.
+# Configuración de excepciones conocidas en .gitleaks.toml (si existe). © Limonada Web.
+name: Claves filtradas
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+          lfs: false
+      - name: Instalar Gitleaks
+        run: curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz | tar -xz gitleaks
+      - name: Buscar claves en lo que se sube
+        env:
+          ANTES: ${{ github.event.before }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          AHORA: ${{ github.sha }}
+        run: |
+          DESDE="${BASE:-$ANTES}"
+          if [ -n "$DESDE" ] && [ "$DESDE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$DESDE^{commit}" 2>/dev/null; then
+            RANGO="$DESDE..$AHORA"
+          else
+            RANGO="-1 $AHORA"
+          fi
+          echo "Revisando: $RANGO"
+          ./gitleaks detect --source . --log-opts="$RANGO" --redact --no-banner -v
